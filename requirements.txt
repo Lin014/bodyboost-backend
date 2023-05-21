@@ -3,6 +3,7 @@
 django
 djangorestframework
 psycopg2
+drf_yasg
 
 # pyyaml
 # requests
