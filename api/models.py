@@ -1,6 +1,5 @@
 from django.db import models
 
-# Create your models here.
 class users(models.Model):
     status_choices = [ 
         ('success', 'Success'), 
@@ -13,7 +12,7 @@ class users(models.Model):
     ]
 
     account = models.CharField(max_length=30, blank=False, null=False)
-    password = models.CharField(max_length=30, blank=True, null=True)
+    password = models.CharField(max_length=200, blank=True, null=True)
     email = models.CharField(max_length=30, blank=False, null=False)
     created_type = models.CharField(max_length=20, choices=created_type_choices, blank=False, null=False)
     status = models.CharField(max_length=20, choices=status_choices, blank=False, null=False)
