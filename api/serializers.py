@@ -1,7 +1,18 @@
 from rest_framework import serializers
-from .models import users
+from .models import *
+
 
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = users
+        fields = '__all__'
+
+class ExerciseDegreeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = exercise_degree
+        fields = '__all__'
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = profile
         fields = '__all__'

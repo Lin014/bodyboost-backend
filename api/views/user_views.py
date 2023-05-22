@@ -9,13 +9,15 @@ from drf_yasg import openapi
 from ..models import users
 from ..serializers import UsersSerializer
 
+from django.core.validators import EmailValidator
+
 @swagger_auto_schema(
     methods=['GET'],
     operation_summary='查詢全部的使用者',
     operation_description=""
 )
 @api_view(['GET'])
-def getUsers(request):
+def getAllUser(request):
     all_user = users.objects.all()
     serializer = UsersSerializer(all_user, many=True)
     return Response(serializer.data)
@@ -59,22 +61,39 @@ def getUserById(request, id):
 @api_view(['POST'])
 def addUser(request):
     newUser = request.data
-    password = request.data['password']
-    newUser['password'] = make_password(password)
-    newUser['status'] = 'unverified'
-    newUser['created_type'] = 'normal'
+    duplicateField = []
 
-    serializer = UsersSerializer(data=newUser)
-    if (serializer.is_valid()):
-        serializer.save()
-        return Response(serializer.data)
-    else:
-        return Response({ "message": "User format error." }, status=400)
+    try:
+        user = users.objects.get(account=newUser['account'], created_type='normal')
+        duplicateField.append('account')
+    except users.DoesNotExist:
+        print('Account is not duplicate.')
+
+    try:
+        user2 = users.objects.get(email=newUser['email'], created_type='normal')
+        duplicateField.append('email')
+        return Response({ "created": False, "message": "Duplicate " + " and ".join(duplicateField) }, status=400)
+    except users.DoesNotExist:
+        if 'account' in duplicateField:
+            return Response({ "created": False, "message": "Duplicate " + " and ".join(duplicateField) }, status=400)
+        else:
+            password = request.data['password']
+            newUser['password'] = make_password(password)
+            newUser['status'] = 'unverified'
+            newUser['created_type'] = 'normal'
+
+            serializer = UsersSerializer(data=newUser)
+            if (serializer.is_valid()):
+                serializer.save()
+                return Response(serializer.data)
+            else:
+                return Response({ "message": "User format error." }, status=400)
+    
 
 @swagger_auto_schema(
     methods=['PUT'],
     operation_summary="更新使用者資料",
-    operation_description="不管是一般或Google使用者都可更新，不過一般使用者能更改的欄位只有password、status，Google使用者只有status，也可傳完整的user欄位。修改成功後會回傳修改後的user資料",
+    operation_description="更新一般使用者之密碼與信箱，Google使用者無法更新",
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
@@ -82,10 +101,10 @@ def addUser(request):
                 type=openapi.TYPE_STRING,
                 description='User password'
             ),
-            'status': openapi.Schema(
+            'email': openapi.Schema(
                 type=openapi.TYPE_STRING,
-                description='User status'
-            ),
+                description='User email'  
+            )
         }
     )
 )
@@ -97,17 +116,21 @@ def updateUser(request, id):
         return Response({ "update": False, "message": "User not found."}, status=404)
     
     user = request.data
-    if (user['created_type'] == 'normal'):
+    if (updateUser.created_type == 'normal'):
         updateUser.password = make_password(user['password'])
-        updateUser.status = user['status']
-        
+        updateUser.email = user['email']
+
+        serializer = UsersSerializer(updateUser)
+        email_validator = EmailValidator()
+        try:
+            email_validator(updateUser.email)
+            updateUser.save()
+            return Response(serializer.data, status=200)
+        except:
+            return Response({ "message": "Email format error." }, status=400)
     else:
-        updateUser.status = user['status']
-
-    updateUser.save()
-
-    serializer = UsersSerializer(updateUser)
-    return Response(serializer.data, status=200)
+        return Response({ "update": False, "message": "User cannot be changed." }, status=400)
+    
 
 @swagger_auto_schema(
     methods=['DELETE'],

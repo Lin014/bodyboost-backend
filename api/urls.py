@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import user_views
+from .views import user_views, exerciseDegree_views
 
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -18,11 +18,16 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('users/', user_views.getUsers),
+    path('users/', user_views.getAllUser),
     path('users/<int:id>/', user_views.getUserById),
     path('users/add/', user_views.addUser),
     path('users/update/<int:id>/', user_views.updateUser),
     path('users/delete/<int:id>/', user_views.deleteUser),
     path('users/login/normal', user_views.login_normal),
-    path('users/login/google', user_views.login_google)
+    path('users/login/google', user_views.login_google),
+    path('exercisedegree/', exerciseDegree_views.getAllExerciseDegree),
+    path('exercisedegree/<int:id>/', exerciseDegree_views.getExerciseDegreeById),
+    path('exercisedegree/add/', exerciseDegree_views.addExerciseDegree),
+    path('exercisedegree/updata/<int:id>/', exerciseDegree_views.updateExerciseDegree),
+    path('exercisedegree/delete/<int:id>/', exerciseDegree_views.deleteExerciseDegree)
 ]
