@@ -8,6 +8,7 @@ from drf_yasg import openapi
 
 from ..models import users
 from ..serializers import UsersSerializer
+from ..utils.sendMail import sendVerificationMail
 
 from django.core.validators import EmailValidator
 
@@ -85,6 +86,7 @@ def addUser(request):
             serializer = UsersSerializer(data=newUser)
             if (serializer.is_valid()):
                 serializer.save()
+                sendVerificationMail(request.data['email'])
                 return Response(serializer.data)
             else:
                 return Response({ "message": "User format error." }, status=400)
@@ -130,7 +132,7 @@ def updateUser(request, id):
             return Response({ "message": "Email format error." }, status=400)
     else:
         return Response({ "update": False, "message": "User cannot be changed." }, status=400)
-    
+   
 
 @swagger_auto_schema(
     methods=['DELETE'],

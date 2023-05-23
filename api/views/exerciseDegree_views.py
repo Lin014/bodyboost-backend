@@ -45,7 +45,7 @@ def getExerciseDegreeById(request, id):
             ),
             'factor': openapi.Schema(
                 type=openapi.TYPE_NUMBER,
-                description='運動因子'
+                description='運動因子, 浮點數'
             )
         }
     )

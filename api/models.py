@@ -32,5 +32,5 @@ class profile(models.Model):
     height = models.FloatField()
     weight = models.FloatField()
     image = models.TextField(blank=True, null=True)
-    user = models.ForeignKey(users, on_delete=models.CASCADE)
-    exercise_degree = models.ForeignKey(exercise_degree, on_delete=models.CASCADE)
+    user_id = models.OneToOneField(users, on_delete=models.CASCADE)
+    exercise_degree_id = models.ForeignKey(exercise_degree, on_delete=models.SET(-1))
