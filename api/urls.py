@@ -31,5 +31,5 @@ urlpatterns = [
     path('profile/<int:id>/', profile_views.getProfileById),
     path('profile/add/', profile_views.addProfile),
     path('profile/update/<int:id>/', profile_views.updateProfile),
-    path('profile/delete/<int:id>/', profile_views.deleteProfile)
+    path('profile/delete/<int:id>/', profile_views.deleteProfile),
 ]

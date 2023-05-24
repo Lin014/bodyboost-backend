@@ -86,11 +86,12 @@ def addUser(request):
             serializer = UsersSerializer(data=newUser)
             if (serializer.is_valid()):
                 serializer.save()
-                sendVerificationMail(request.data['email'])
+                sendUser = users.objects.get(id=serializer.data['id'])
+                sendVerificationMail(sendUser.email, sendUser)
                 return Response(serializer.data)
             else:
                 return Response({ "message": "User format error." }, status=400)
-    
+
 
 @swagger_auto_schema(
     methods=['PUT'],

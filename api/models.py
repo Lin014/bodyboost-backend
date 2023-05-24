@@ -20,7 +20,7 @@ class users(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 class profile(models.Model):
-    gender_choices = [(1, 1), (2, 2)]
+    gender_choices = [(1, 'Male'), (2, 'Female')]
 
     name = models.CharField(max_length=50)
     gender = models.IntegerField(choices=gender_choices)
@@ -29,4 +29,15 @@ class profile(models.Model):
     weight = models.FloatField()
     image = models.TextField(blank=True, null=True)
     user_id = models.OneToOneField(users, on_delete=models.CASCADE)
-    # exercise_degree_id = models.ForeignKey(exercise_degree, on_delete=models.SET(-1))
+
+class EmailVerifyCode(models.Model):
+    send_type_choices = (
+        ('register', 'Register'),
+        ('forget', 'Forget')
+    )
+    code = models.CharField(max_length=15)
+    email = models.EmailField()
+    send_type = models.CharField(max_length=20, choices=send_type_choices)
+    created_at = models.DateTimeField(auto_now_add=True)
+    user_id = models.ForeignKey(users, on_delete=models.CASCADE)
+
