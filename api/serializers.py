@@ -7,11 +7,6 @@ class UsersSerializer(serializers.ModelSerializer):
         model = users
         fields = '__all__'
 
-class ExerciseDegreeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = exercise_degree
-        fields = '__all__'
-
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = profile

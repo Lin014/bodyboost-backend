@@ -19,10 +19,6 @@ class users(models.Model):
     status = models.CharField(max_length=20, choices=status_choices)
     created_at = models.DateTimeField(auto_now_add=True)
 
-class exercise_degree(models.Model):
-    activity_level = models.TextField(blank=False, null=False)
-    factor = models.FloatField(blank=False, null=False)
-
 class profile(models.Model):
     gender_choices = [(1, 1), (2, 2)]
 
@@ -33,4 +29,4 @@ class profile(models.Model):
     weight = models.FloatField()
     image = models.TextField(blank=True, null=True)
     user_id = models.OneToOneField(users, on_delete=models.CASCADE)
-    exercise_degree_id = models.ForeignKey(exercise_degree, on_delete=models.SET(-1))
+    # exercise_degree_id = models.ForeignKey(exercise_degree, on_delete=models.SET(-1))

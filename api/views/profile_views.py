@@ -5,8 +5,8 @@ from datetime import datetime
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-from ..models import profile, users, exercise_degree
-from ..serializers import ProfileSerializer, UsersSerializer, ExerciseDegreeSerializer
+from ..models import profile, users
+from ..serializers import ProfileSerializer, UsersSerializer
 
 @swagger_auto_schema(
     methods=['GET'],
@@ -63,10 +63,6 @@ def getProfileById(request, id):
             'userID': openapi.Schema(
                 type=openapi.TYPE_INTEGER,
                 description='相對應的user id, foreignkey'
-            ),
-            'exerciseDegreeID': openapi.Schema(
-                type=openapi.TYPE_INTEGER,
-                description='相對應的exercise_degree id, foreignkey'
             )
         }
     )
@@ -79,19 +75,13 @@ def addProfile(request):
     except users.DoesNotExist:
         return Response({ "message:" "Can't find userId" }, status=404)
     
-    try:
-        rExerciseDegree = exercise_degree.objects.get(id=request.data['exerciseDegreeID'])
-    except exercise_degree.DoesNotExist:
-        return Response({ "message:" "Can't find exerciseDegreeID" }, status=404)
-
     newProfile = {
         "name": request.data['name'],
         "gender": request.data['gender'],
         "birthday": datetime.strptime(request.data['birthday'], "%Y-%m-%d").date(),
         "height": request.data['height'],
         "weight": request.data['weight'],
-        "user_id": request.data['userID'],
-        "exercise_degree_id": request.data['exerciseDegreeID']
+        "user_id": request.data['userID']
     }
     
     serializer = ProfileSerializer(data=newProfile)
