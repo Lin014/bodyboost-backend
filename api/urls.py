@@ -8,10 +8,7 @@ schema_view = get_schema_view(
    openapi.Info(
       title="Bodyboost API",
       default_version='v1',
-      description="Bodyboost API documentation",
-      terms_of_service="https://www.google.com/policies/terms/",
-      contact=openapi.Contact(email="contact@snippets.local"),
-      license=openapi.License(name="BSD License"),
+      description="Bodyboost API documentation"
    ),
    public=True,
 )
@@ -24,8 +21,10 @@ urlpatterns = [
     path('users/add/', user_views.addUser),
     path('users/update/<int:id>/', user_views.updateUser),
     path('users/delete/<int:id>/', user_views.deleteUser),
-    path('users/login/normal', user_views.login_normal),
-    path('users/login/google', user_views.login_google),
+    path('users/login/normal/', user_views.login_normal),
+    path('users/login/google/', user_views.login_google),
+    path('users/sendVerificationMail/<int:id>/', user_views.resendVerificationMail),
+    path('users/sendForgetPasswordMail/', user_views.sendForgetPasswordMail),
     # profile
     path('profile/', profile_views.getAllProfile),
     path('profile/<int:id>/', profile_views.getProfileById),

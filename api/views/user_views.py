@@ -15,18 +15,31 @@ from django.core.validators import EmailValidator
 @swagger_auto_schema(
     methods=['GET'],
     operation_summary='查詢全部的使用者',
-    operation_description=""
+    operation_description="",
+    responses={
+            200: 'userObject',
+            404: '{ "message": "User not found." }'
+    } 
 )
 @api_view(['GET'])
 def getAllUser(request):
     all_user = users.objects.all()
     serializer = UsersSerializer(all_user, many=True)
-    return Response(serializer.data)
+    
+    if (serializer.data == []):
+        return Response({ "message": "User not found." }, status=404)
+    else:
+        return Response(serializer.data)
+    
 
 @swagger_auto_schema(
     methods=['GET'],
     operation_summary='查詢指定id的使用者',
-    operation_description="輸入id，查詢使用者"
+    operation_description="輸入id，查詢使用者",
+    responses={
+            200: 'userObject',
+            404: '{ "message": "User not found." }'
+    }  
 )
 @api_view(['GET'])
 def getUserById(request, id):
@@ -35,7 +48,7 @@ def getUserById(request, id):
         serializer = UsersSerializer(user)
         return Response(serializer.data, status=200)
     except users.DoesNotExist:
-        return Response({ "message": "User not found."}, status=404)
+        return Response({ "message": "User not found." }, status=404)
 
 @swagger_auto_schema(
     methods=['POST'],
@@ -57,7 +70,11 @@ def getUserById(request, id):
                 description='User email'
             ),
         }
-    )
+    ),
+    responses={
+            200: 'userObject',
+            400: '{ "created": False, "message": "Duplicate account and/or password" } or { "message": "User format error." }'
+    }   
 )
 @api_view(['POST'])
 def addUser(request):
@@ -92,11 +109,10 @@ def addUser(request):
             else:
                 return Response({ "message": "User format error." }, status=400)
 
-
 @swagger_auto_schema(
     methods=['PUT'],
     operation_summary="更新使用者資料",
-    operation_description="更新一般使用者之密碼與信箱，Google使用者無法更新",
+    operation_description="更新一般使用者之密碼與信箱，Google使用者無法更新，也可傳入完整users json",
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
@@ -109,7 +125,12 @@ def addUser(request):
                 description='User email'  
             )
         }
-    )
+    ),
+    responses={
+            200: 'userObject',
+            400: '{ "message": "Email format error." } or { "update": False, "message": "User cannot be changed." }',
+            404: '{ "update": False, "message": "User not found." }'
+    }    
 )
 @api_view(['PUT'])
 def updateUser(request, id):
@@ -138,7 +159,11 @@ def updateUser(request, id):
 @swagger_auto_schema(
     methods=['DELETE'],
     operation_summary='刪除指定id的使用者',
-    operation_description="輸入id，刪除使用者"
+    operation_description="輸入id，刪除使用者",
+    responses={
+            200: '{ "delete": True, "message": "User deleted successfully." }',
+            404: '{ "delete": False, "message": "User not found." }'
+    }    
 )
 @api_view(['DELETE'])
 def deleteUser(request, id):
@@ -166,7 +191,12 @@ def deleteUser(request, id):
                 description='User password'
             ),
         }
-    )
+    ),
+    responses={
+            200: 'userObject',
+            400: '{ "login": False, "message": "Wrong password."}',
+            404: '{ "message": "User not found." }'
+    }
 )
 @api_view(['POST'])
 def login_normal(request):
@@ -191,10 +221,14 @@ def login_normal(request):
         properties={
             'email': openapi.Schema(
                 type=openapi.TYPE_STRING,
-                description='User account'
+                description='User email'
             )
         }
-    )
+    ),
+    responses={
+            200: 'userObject',
+            400: '{ "message": "User format error." }'
+    }
 )
 @api_view(['POST'])
 def login_google(request):
@@ -214,4 +248,52 @@ def login_google(request):
             return Response(serializer.data)
         else:
             return Response({ "message": "User format error." }, status=400)
+
+@swagger_auto_schema(
+    methods=['GET'],
+    operation_summary="重寄註冊驗證信",
+    operation_description="只限一般使用者",
+    responses={
+            200: '{ "message": "Send successfully." }',
+            404: '{ "message": "User not found." }'
+    }
+)
+@api_view(['GET'])
+def resendVerificationMail(request, id):
+    try:
+        user = users.objects.get(id=id)
+    except users.DoesNotExist:
+        return Response({ "message": "User not found." }, status=404)
+    
+    sendVerificationMail(user.email, user)
+    return Response({ "message": "Send successfully." }, status=200)
+    
+@swagger_auto_schema(
+    methods=['POST'],
+    operation_summary="寄送忘記密碼驗證信",
+    operation_description="只限一般使用者使用",
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'account': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='User account'
+            )
+        },
+    ),
+    responses={
+            200: '{ "message": "Send successfully.", "user": userObject }',
+            404: '{ "message": "User not found." }'
+    }
+)
+@api_view(['POST'])
+def sendForgetPasswordMail(request):
+    try:
+        user = users.objects.get(account=request.data['account'], created_type='normal')
+    except users.DoesNotExist:
+        return Response({ "message": "User not found." }, status=404)
+    
+    sendForgetPasswordMail(user.email, user)
+    serializer = UsersSerializer(user)
+    return Response({ "message": "Send successfully.", "user": serializer.data })
 

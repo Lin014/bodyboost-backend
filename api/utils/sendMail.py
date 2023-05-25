@@ -32,7 +32,21 @@ def sendVerificationMail(email, userID):
         user_id = userID
     )
     
-    sendTitle = "歡迎註冊 BodyBoost APP 會員帳號！"
+    sendTitle = "歡迎註冊 Body Boost APP 會員帳號！"
+    sendContent = "以下是您的驗證碼：\n\n " + emailVerifyCode.code
+    sender = formataddr(('Body Boost', EMAIL_HOST_USER))
+    send_mail(sendTitle, sendContent, sender, [emailVerifyCode.email], fail_silently=False)
+
+def sendForgetPasswordMail(email, userID):
+    code = getAlphanumericRandomCode()
+    emailVerifyCode = EmailVerifyCode.objects.create(
+        code = code,
+        email = email,
+        send_type = 'forget',
+        user_id = userID
+    )
+
+    sendTitle = "Body Boost 重設密碼驗證"
     sendContent = "以下是您的驗證碼：\n\n " + emailVerifyCode.code
     sender = formataddr(('Body Boost', EMAIL_HOST_USER))
     send_mail(sendTitle, sendContent, sender, [emailVerifyCode.email], fail_silently=False)

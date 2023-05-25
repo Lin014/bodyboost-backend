@@ -17,7 +17,12 @@ from ..serializers import ProfileSerializer, UsersSerializer
 def getAllProfile(request):
     all_profile = profile.objects.all()
     serializer = ProfileSerializer(all_profile, many=True)
-    return Response(serializer.data)
+
+    if (serializer.data == []):
+        return Response({ "message": "Profile not found." }, status=404)
+    else:
+        return Response(serializer.data)
+        
 
 @swagger_auto_schema(
     methods=['GET'],
