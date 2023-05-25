@@ -1,7 +1,7 @@
 from django.db import models
 from datetime import date
 
-class users(models.Model):
+class Users(models.Model):
     status_choices = [ 
         ('success', 'Success'), 
         ('verified', 'Verified'), 
@@ -19,7 +19,7 @@ class users(models.Model):
     status = models.CharField(max_length=20, choices=status_choices)
     created_at = models.DateTimeField(auto_now_add=True)
 
-class profile(models.Model):
+class Profile(models.Model):
     gender_choices = [(1, 'Male'), (2, 'Female')]
 
     name = models.CharField(max_length=50)
@@ -28,7 +28,7 @@ class profile(models.Model):
     height = models.FloatField()
     weight = models.FloatField()
     image = models.TextField(blank=True, null=True)
-    user_id = models.OneToOneField(users, on_delete=models.CASCADE)
+    user_id = models.OneToOneField(Users, on_delete=models.CASCADE)
 
 class EmailVerifyCode(models.Model):
     send_type_choices = (
@@ -39,5 +39,5 @@ class EmailVerifyCode(models.Model):
     email = models.EmailField()
     send_type = models.CharField(max_length=20, choices=send_type_choices)
     created_at = models.DateTimeField(auto_now_add=True)
-    user_id = models.ForeignKey(users, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 

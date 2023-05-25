@@ -4,15 +4,10 @@ from .models import *
 
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
-        model = users
+        model = Users
         fields = '__all__'
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = profile
-        fields = '__all__'
-
-class EmailVerifyCodeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = EmailVerifyCode
+        model = Profile
         fields = '__all__'

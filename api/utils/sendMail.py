@@ -23,7 +23,7 @@ def getNumberRandomCode():
 
     return code
 
-def sendVerificationMail(email, userID):
+def sendRegisterMail(email, userID):
     code = getNumberRandomCode()
     emailVerifyCode = EmailVerifyCode.objects.create(
         code = code,
