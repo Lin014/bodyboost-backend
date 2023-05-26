@@ -38,5 +38,5 @@ urlpatterns = [
     path('profile/add/', profile_views.addProfile),
     path('profile/update/<int:id>/', profile_views.updateProfile),
     path('profile/delete/<int:id>/', profile_views.deleteProfile),
-    path('profile/uploadProfileImage/', profile_views.uploadProfileImage)
+    path('profile/uploadProfileImage/<int:id>', profile_views.uploadProfileImage)
 ] + static(MEDIA_URL, document_root=MEDIA_ROOT)

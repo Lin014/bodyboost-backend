@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, parser_classes
+from rest_framework.decorators import api_view
 from datetime import datetime
 
 from drf_yasg.utils import swagger_auto_schema
@@ -11,7 +11,6 @@ from ..utils.response import *
 from .user_views import updateUserStatus
 from ..utils.validate import validateImage
 from ..utils.osFileManage import deleteFile
-
 
 @swagger_auto_schema(
     methods=['GET'],
@@ -198,18 +197,14 @@ def deleteProfile(request, id):
     return Response({ "message": "Profile deleted successfully." }, status=200)
 
 @swagger_auto_schema(
-    methods=['POST'],
+    methods=['PUT'],
     tags=["Profile"],
     operation_summary="上傳使用者大頭照",
     operation_description="",
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
-        required=['id', 'image'],
+        required=['image'],
         properties={
-            'id': openapi.Schema(
-                type=openapi.TYPE_INTEGER,
-                description='Profile id',
-            ),
             'image': openapi.Schema(
                 type=openapi.TYPE_ARRAY,
                 description='上傳使用者大頭貼, 需將圖片轉為二進制',
@@ -222,14 +217,15 @@ def deleteProfile(request, id):
             404: str(NotFoundResponse('Profile'))
     }
 )
-@api_view(['POST'])
-def uploadProfileImage(request):
+@api_view(['PUT'])
+def uploadProfileImage(request, id):
     try:
-        profile = Profile.objects.get(id=request.data['id'])
+        profile = Profile.objects.get(id=id)
     except Profile.DoesNotExist:
         return Response(NotFoundResponse('Profile'), status=404)
     
     image = request.FILES['image']
+    print(image)
 
     if (validateImage(image)):
         # delete old file
