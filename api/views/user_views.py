@@ -18,7 +18,7 @@ from ..utils.response import *
     operation_summary='查詢全部的使用者',
     operation_description="",
     responses={
-            200: 'UserObject',
+            200: UsersSerializer,
             404: str(NotFoundResponse('User'))
     }
 )
@@ -39,7 +39,7 @@ def getAllUser(request):
     operation_summary='查詢指定id的使用者',
     operation_description="輸入id，查詢使用者",
     responses={
-            200: 'UserObject',
+            200: UsersSerializer,
             404: str(NotFoundResponse('User'))
     }
 )
@@ -75,7 +75,7 @@ def getUserById(request, id):
         }
     ),
     responses={
-            200: 'UserObject',
+            200: UsersSerializer,
             400: '{ "created": False, "message": "Duplicate account and/or password" } or ' + str(FormatErrorResponse('User'))
     }  
 )
@@ -131,7 +131,7 @@ def addUser(request):
         }
     ),
     responses={
-            200: 'UserObject',
+            200: UsersSerializer,
             400: str(FormatErrorResponse('Email')) + ' or { "message": "User cannot be changed." }',
             404: str(NotFoundResponse('User'))
     }    
@@ -199,7 +199,7 @@ def deleteUser(request, id):
         }
     ),
     responses={
-            200: 'UserObject',
+            200: UsersSerializer,
             400: '{ "message": "Wrong password." }',
             404: str(NotFoundResponse('User'))
     }
@@ -233,7 +233,7 @@ def login_normal(request):
         }
     ),
     responses={
-            200: 'UserObject',
+            200: UsersSerializer,
             400: str(FormatErrorResponse('User'))
     }
 )

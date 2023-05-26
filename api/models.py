@@ -27,8 +27,8 @@ class Profile(models.Model):
     birthday = models.DateField()
     height = models.FloatField()
     weight = models.FloatField()
-    image = models.TextField(blank=True, null=True)
-    user_id = models.OneToOneField(Users, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='img', default='')
+    user = models.OneToOneField(Users, on_delete=models.CASCADE)
 
 class EmailVerifyCode(models.Model):
     send_type_choices = (
@@ -39,5 +39,5 @@ class EmailVerifyCode(models.Model):
     email = models.EmailField()
     send_type = models.CharField(max_length=20, choices=send_type_choices)
     created_at = models.DateTimeField(auto_now_add=True)
-    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+    user = models.ForeignKey(Users, on_delete=models.CASCADE)
 

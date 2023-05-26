@@ -23,13 +23,13 @@ def getNumberRandomCode():
 
     return code
 
-def sendRegisterMail(email, userID):
+def sendRegisterMail(email, user):
     code = getNumberRandomCode()
     emailVerifyCode = EmailVerifyCode.objects.create(
         code = code,
         email = email,
         send_type = 'register',
-        user_id = userID
+        user = user
     )
     
     sendTitle = "歡迎註冊 Body Boost APP 會員帳號！"
@@ -37,13 +37,13 @@ def sendRegisterMail(email, userID):
     sender = formataddr(('Body Boost', EMAIL_HOST_USER))
     send_mail(sendTitle, sendContent, sender, [emailVerifyCode.email], fail_silently=False)
 
-def sendForgetPasswordMail(email, userID):
+def sendForgetPasswordMail(email, user):
     code = getAlphanumericRandomCode()
     emailVerifyCode = EmailVerifyCode.objects.create(
         code = code,
         email = email,
         send_type = 'forget',
-        user_id = userID
+        user_id = user
     )
 
     sendTitle = "Body Boost 重設密碼驗證"

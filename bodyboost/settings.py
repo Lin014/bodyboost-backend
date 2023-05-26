@@ -1,5 +1,6 @@
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -130,5 +131,6 @@ EMAIL_HOST_USER = 'projectmanager0014@gmail.com'
 EMAIL_HOST_PASSWORD = 'gdjwqpgtkdohxhuz'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 

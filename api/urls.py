@@ -1,8 +1,12 @@
 from django.urls import path
+from django.conf.urls.static import static
+
 from .views import user_views, profile_views, authentication_views
 
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+
+from bodyboost.settings import MEDIA_URL, MEDIA_ROOT
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -34,4 +38,5 @@ urlpatterns = [
     path('profile/add/', profile_views.addProfile),
     path('profile/update/<int:id>/', profile_views.updateProfile),
     path('profile/delete/<int:id>/', profile_views.deleteProfile),
-]
+    path('profile/uploadProfileImage/', profile_views.uploadProfileImage)
+] + static(MEDIA_URL, document_root=MEDIA_ROOT)

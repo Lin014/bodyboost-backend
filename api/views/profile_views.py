@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, parser_classes
 from datetime import datetime
 
 from drf_yasg.utils import swagger_auto_schema
@@ -9,6 +9,9 @@ from ..models import Profile, Users
 from ..serializers import ProfileSerializer
 from ..utils.response import *
 from .user_views import updateUserStatus
+from ..utils.validate import validateImage
+from ..utils.osFileManage import deleteFile
+
 
 @swagger_auto_schema(
     methods=['GET'],
@@ -16,7 +19,7 @@ from .user_views import updateUserStatus
     operation_summary='查詢全部的使用者個人資料',
     operation_description="",
     responses={
-            200: 'ProfileObject',
+            200: ProfileSerializer,
             404: str(NotFoundResponse('Profile'))
     }
 )
@@ -85,7 +88,7 @@ def getProfileById(request, id):
         }
     ),
     responses={
-            200: 'ProfileObject',
+            200: ProfileSerializer,
             400: str(FormatErrorResponse('Profile')),
             404: str(NotFoundResponse('userID'))
     }
@@ -104,7 +107,7 @@ def addProfile(request):
         "birthday": datetime.strptime(request.data['birthday'], "%Y-%m-%d").date(),
         "height": request.data['height'],
         "weight": request.data['weight'],
-        "user_id": request.data['userID']
+        "user": request.data['userID']
     }
     
     serializer = ProfileSerializer(data=newProfile)
@@ -120,7 +123,7 @@ def addProfile(request):
     methods=['PUT'],
     tags=["Profile"],
     operation_summary="更新使用者個人資料",
-    operation_description="可更新欄位只有以下輸入之欄位，可傳入完整的profile",
+    operation_description="可更新欄位只有以下輸入之欄位，需完整傳入以下欄位之json，就算不需要修改的欄位也要",
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
@@ -147,7 +150,7 @@ def addProfile(request):
         }
     ),
     responses={
-            200: 'ProfileObject',
+            200: ProfileSerializer,
             400: str(FormatErrorResponse('Profile')),
             404: str(NotFoundResponse('Profile'))
     }
@@ -193,3 +196,49 @@ def deleteProfile(request, id):
     
     delProfile.delete()
     return Response({ "message": "Profile deleted successfully." }, status=200)
+
+@swagger_auto_schema(
+    methods=['POST'],
+    tags=["Profile"],
+    operation_summary="上傳使用者大頭照",
+    operation_description="",
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        required=['id', 'image'],
+        properties={
+            'id': openapi.Schema(
+                type=openapi.TYPE_INTEGER,
+                description='Profile id',
+            ),
+            'image': openapi.Schema(
+                type=openapi.TYPE_ARRAY,
+                description='上傳使用者大頭貼, 需將圖片轉為二進制',
+                items=openapi.Items(type=openapi.TYPE_STRING)
+            )
+        }
+    ),
+    responses={
+            200: ProfileSerializer,
+            404: str(NotFoundResponse('Profile'))
+    }
+)
+@api_view(['POST'])
+def uploadProfileImage(request):
+    try:
+        profile = Profile.objects.get(id=request.data['id'])
+    except Profile.DoesNotExist:
+        return Response(NotFoundResponse('Profile'), status=404)
+    
+    image = request.FILES['image']
+
+    if (validateImage(image)):
+        # delete old file
+        deleteFile(profile.image)
+        # store new file and update path to database
+        profile.image = image
+        profile.save()
+        # convert profile object to json format
+        serializer = ProfileSerializer(profile)
+        return Response(serializer.data)
+    else:
+        return Response(FormatErrorResponse('Image'))
