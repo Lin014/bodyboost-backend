@@ -2,12 +2,14 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.core.validators import EmailValidator
 
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-from ..models import Users, EmailVerifyCode
+from ..models import Users
 from ..serializers import UsersSerializer
 from ..utils.sendMail import sendRegisterMail
 from ..utils.response import *
@@ -23,6 +25,8 @@ from ..utils.response import *
     }
 )
 @api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def getAllUser(request):
     all_user = Users.objects.all()
     serializer = UsersSerializer(all_user, many=True)
@@ -44,6 +48,8 @@ def getAllUser(request):
     }
 )
 @api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def getUserById(request, id):
     try:
         user = Users.objects.get(id=id)
@@ -80,6 +86,8 @@ def getUserById(request, id):
     }  
 )
 @api_view(['POST'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def addUser(request):
     newUser = request.data
     duplicateField = []
@@ -137,6 +145,8 @@ def addUser(request):
     }    
 )
 @api_view(['PUT'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def updateUser(request, id):
     try:
         updateUser = Users.objects.get(id=id)
@@ -171,6 +181,8 @@ def updateUser(request, id):
     }    
 )
 @api_view(['DELETE'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def deleteUser(request, id):
     try:
         delUser = Users.objects.get(id=id)
@@ -205,6 +217,8 @@ def deleteUser(request, id):
     }
 )
 @api_view(['POST'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def login_normal(request):
     try:
         user = Users.objects.get(account=request.data['account'], created_type='normal')
@@ -238,6 +252,8 @@ def login_normal(request):
     }
 )
 @api_view(['POST'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def login_google(request):
     try:
         user = Users.objects.get(account=request.data['email'], created_type='google')

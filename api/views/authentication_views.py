@@ -3,7 +3,9 @@ from django.utils import timezone
 import datetime
 
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -34,6 +36,8 @@ from .user_views import updateUserStatus
     }
 )
 @api_view(['POST'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def resendRegisterMail(request):
     try:
         user = Users.objects.get(account=request.data['account'], created_type='normal')
@@ -64,6 +68,8 @@ def resendRegisterMail(request):
     }
 )
 @api_view(['POST'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def sendForgetPasswordMail(request):
     try:
         user = Users.objects.get(account=request.data['account'], created_type='normal')
@@ -99,6 +105,8 @@ def sendForgetPasswordMail(request):
     }
 )
 @api_view(['POST'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def authenticationRegisterCode(request):
     try:
         emailVerifyCodeList = EmailVerifyCode.objects.filter(user_id=request.data['userID'], send_type='register')
@@ -147,6 +155,8 @@ def authenticationRegisterCode(request):
     }
 )
 @api_view(['POST'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def authenticationForgetPasswordCode(request):
     try:
         emailVerifyCodeList = EmailVerifyCode.objects.filter(user_id=request.data['userID'], send_type='forget')

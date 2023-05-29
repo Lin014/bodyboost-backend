@@ -1,5 +1,7 @@
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 from datetime import datetime
 
 from drf_yasg.utils import swagger_auto_schema
@@ -23,6 +25,8 @@ from ..utils.osFileManage import deleteFile
     }
 )
 @api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def getAllProfile(request):
     all_profile = Profile.objects.all()
     serializer = ProfileSerializer(all_profile, many=True)
@@ -44,6 +48,8 @@ def getAllProfile(request):
     }
 )
 @api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def getProfileById(request, id):
     try:
         p = Profile.objects.get(id=id)
@@ -93,6 +99,8 @@ def getProfileById(request, id):
     }
 )
 @api_view(['POST'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def addProfile(request):
 
     try:
@@ -155,6 +163,8 @@ def addProfile(request):
     }
 )
 @api_view(['PUT'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def updateProfile(request, id):
     try:
         updateProfile = Profile.objects.get(id=id)
@@ -187,6 +197,8 @@ def updateProfile(request, id):
     }
 )
 @api_view(['DELETE'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def deleteProfile(request, id):
     try:
         delProfile = Profile.objects.get(id=id)
@@ -218,6 +230,8 @@ def deleteProfile(request, id):
     }
 )
 @api_view(['PUT'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def uploadProfileImage(request, id):
     try:
         profile = Profile.objects.get(id=id)
