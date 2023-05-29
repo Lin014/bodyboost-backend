@@ -22,26 +22,27 @@ from .user_views import updateUserStatus
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            'userID': openapi.Schema(
-                type=openapi.TYPE_INTEGER,
-                description='User id'
+            'account': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description='User account'
             )
         },
     ),
     responses={
-            200: '{ "message": "Send successfully." }',
+            200: '{ "message": "Send successfully.", "user": UsersObject }',
             404: str(NotFoundResponse('User'))
     }
 )
 @api_view(['POST'])
 def resendRegisterMail(request):
     try:
-        user = Users.objects.get(id=request.data['userID'])
+        user = Users.objects.get(account=request.data['account'], created_type='normal')
     except Users.DoesNotExist:
         return Response(NotFoundResponse('User'), status=404)
     
     sendRegisterMail(user.email, user)
-    return Response({ "message": "Send successfully." }, status=200)
+    serializer = UsersSerializer(user)
+    return Response({ "message": "Send successfully.", "user": serializer.data }, status=200)
     
 @swagger_auto_schema(
     methods=['POST'],
@@ -58,7 +59,7 @@ def resendRegisterMail(request):
         },
     ),
     responses={
-            200: '{ "message": "Send successfully.", "user": UserObject }',
+            200: '{ "message": "Send successfully.", "user": UsersObject }',
             404: str(NotFoundResponse('User'))
     }
 )
@@ -92,7 +93,7 @@ def sendForgetPasswordMail(request):
         },
     ),
     responses={
-            200: '{ "message": "Verified successful." }',
+            200: '{ "message": "Verified successful.", "user": UserObject }',
             400: '{ "message": "Verified failed." } or { "message": "Verification code has expired." }',
             404: str(NotFoundResponse('EmailVerifyCode'))
     }
@@ -113,8 +114,8 @@ def authenticationRegisterCode(request):
 
     if (emailVerifyCodeList[emailVerifyCodeListLength-1].created_at >= minMatchTime):
         if (emailVerifyCodeList[emailVerifyCodeListLength-1].code == request.data['code']):
-            updateUserStatus(request.data['userID'], 'verified')
-            return Response({ "message": "Verified successful." }, status=200)
+            updateUser = updateUserStatus(request.data['userID'], 'verified')
+            return Response({ "message": "Verified successful.", "user": updateUser }, status=200)
         else:
             return Response({ "message": "Verified failed." }, status=400)
         

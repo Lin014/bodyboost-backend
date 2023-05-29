@@ -43,7 +43,7 @@ def sendForgetPasswordMail(email, user):
         code = code,
         email = email,
         send_type = 'forget',
-        user_id = user
+        user = user
     )
 
     sendTitle = "Body Boost 重設密碼驗證"

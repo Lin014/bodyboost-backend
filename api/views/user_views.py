@@ -260,3 +260,5 @@ def updateUserStatus(id, status):
     updateUser = Users.objects.get(id=id)
     updateUser.status = status
     updateUser.save()
+    serializer = UsersSerializer(updateUser)
+    return serializer.data

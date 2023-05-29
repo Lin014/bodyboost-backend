@@ -39,7 +39,7 @@ def getAllProfile(request):
     operation_summary='查詢指定id的使用者個人資料',
     operation_description="輸入id，查詢使用者個人資料",
     responses={
-            200: 'ProfileObject',
+            200: ProfileSerializer,
             404: str(NotFoundResponse('Profile'))
     }
 )
