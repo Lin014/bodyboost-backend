@@ -5,3 +5,5 @@ djangorestframework
 psycopg2
 drf_yasg
 python-dotenv
+python-magic
+pillow

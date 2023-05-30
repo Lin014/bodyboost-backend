@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf.urls.static import static
 
-from .views import user_views, profile_views, authentication_views
+from .views import user_views, profile_views, authentication_views, store_views, foodtype_views
 
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -38,5 +38,15 @@ urlpatterns = [
     path('profile/add/', profile_views.addProfile),
     path('profile/update/<int:id>/', profile_views.updateProfile),
     path('profile/delete/<int:id>/', profile_views.deleteProfile),
-    path('profile/uploadProfileImage/<int:id>', profile_views.uploadProfileImage)
+    path('profile/uploadProfileImage/<int:id>', profile_views.uploadProfileImage),
+    # store
+    path('store/', store_views.getAllStore),
+    path('store/add/', store_views.addStore),
+    path('store/update/<int:id>', store_views.updateStore),
+    path('store/delete/<int:id>', store_views.deleteStore),
+    # foodtype
+    path('foodtype/', foodtype_views.getAllFoodType),
+    path('foodtype/add/', foodtype_views.addFoodType),
+    path('foodtype/update/<int:id>', foodtype_views.updateFoodType),
+    path('foodtype/delete/<int:id>', foodtype_views.deleteFoodType),
 ] + static(MEDIA_URL, document_root=MEDIA_ROOT)
