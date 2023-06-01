@@ -16,20 +16,23 @@ getUserByIdResponses = {
 }
 
 # request_body: addUser
-addUserRequestBody = {
-    'account': openapi.Schema(
-        type=openapi.TYPE_STRING,
-        description='User account'
-    ),
-    'password': openapi.Schema(
-        type=openapi.TYPE_STRING,
-        description='User password'
-    ),
-    'email': openapi.Schema(
-        type=openapi.TYPE_STRING,
-        description='User email'
-    ),
-}
+addUserRequestBody = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'account': openapi.Schema(
+            type=openapi.TYPE_STRING,
+            description='User account'
+        ),
+        'password': openapi.Schema(
+            type=openapi.TYPE_STRING,
+            description='User password'
+        ),
+        'email': openapi.Schema(
+            type=openapi.TYPE_STRING,
+            description='User email'
+        ),
+    }
+)
 # responses: addFoodType
 addUserResponses = {
     200: UsersSerializer,
@@ -37,16 +40,19 @@ addUserResponses = {
 }
 
 # request_body: updateUser
-updateUserRequestBody = {
-    'password': openapi.Schema(
-        type=openapi.TYPE_STRING,
-        description='User password'
-    ),
-    'email': openapi.Schema(
-        type=openapi.TYPE_STRING,
-        description='User email'
-    )
-}
+updateUserRequestBody = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'password': openapi.Schema(
+            type=openapi.TYPE_STRING,
+            description='User password'
+        ),
+        'email': openapi.Schema(
+            type=openapi.TYPE_STRING,
+            description='User email'
+        )
+    }
+)
 # responses: updateUser
 updateUserResponses = {
     200: UsersSerializer,
@@ -61,16 +67,19 @@ deleteUserResponses = {
 }
 
 # request_body: login_normal
-login_normalRequestBody = {
-    'account': openapi.Schema(
-        type=openapi.TYPE_STRING,
-        description='User account'
-    ),
-    'password': openapi.Schema(
-        type=openapi.TYPE_STRING,
-        description='User password'
-    ),
-}
+login_normalRequestBody = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'account': openapi.Schema(
+            type=openapi.TYPE_STRING,
+            description='User account'
+        ),
+        'password': openapi.Schema(
+            type=openapi.TYPE_STRING,
+            description='User password'
+        ),
+    }
+)
 # responses: login_normal
 login_normalResponses = {
     200: UsersSerializer,
@@ -79,12 +88,15 @@ login_normalResponses = {
 }
 
 # request_body: login_google
-login_googleRequestBody = {
-    'email': openapi.Schema(
-        type=openapi.TYPE_STRING,
-        description='User email'
-    )
-}
+login_googleRequestBody = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'email': openapi.Schema(
+            type=openapi.TYPE_STRING,
+            description='User email'
+        )
+    }
+)
 # responses: login_google
 login_googleResponses = {
     200: UsersSerializer,

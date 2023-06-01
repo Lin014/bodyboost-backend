@@ -35,10 +35,7 @@ def getAllFoodType(request):
     tags=["FoodType"],
     operation_summary="添加食物類別",
     operation_description="",
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties=addFoodTypeRequestBody
-    ),
+    request_body=addFoodTypeRequestBody,
     responses=addFoodTypeResponses
 )
 @api_view(['POST'])
@@ -59,10 +56,7 @@ def addFoodType(request):
     tags=["FoodType"],
     operation_summary="更新食物類別",
     operation_description="",
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties=updateFoodTypeRequestBody
-    ),
+    request_body=updateFoodTypeRequestBody,
     responses=updateFoodTypeResponses
 )
 @api_view(['PUT'])

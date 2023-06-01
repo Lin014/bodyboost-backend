@@ -15,25 +15,15 @@ from ..serializers import UsersSerializer
 from ..utils.sendMail import sendRegisterMail
 from ..utils.response import *
 from .user_views import updateUserStatus
+from ..swagger.authentication import *
 
 @swagger_auto_schema(
     methods=['POST'],
     tags=["Authentication"],
     operation_summary="重寄註冊驗證信",
     operation_description="只限一般使用者",
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'account': openapi.Schema(
-                type=openapi.TYPE_STRING,
-                description='User account'
-            )
-        },
-    ),
-    responses={
-            200: '{ "message": "Send successfully.", "user": UsersObject }',
-            404: str(NotFoundResponse('User'))
-    }
+    request_body=resendRegisterMailRequestBody,
+    responses=resendRegisterMailResponses
 )
 @api_view(['POST'])
 @authentication_classes([BasicAuthentication])
@@ -53,19 +43,8 @@ def resendRegisterMail(request):
     tags=["Authentication"],
     operation_summary="寄送忘記密碼驗證信",
     operation_description="只限一般使用者使用",
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'account': openapi.Schema(
-                type=openapi.TYPE_STRING,
-                description='User account'
-            )
-        },
-    ),
-    responses={
-            200: '{ "message": "Send successfully.", "user": UsersObject }',
-            404: str(NotFoundResponse('User'))
-    }
+    request_body=sendForgetPasswordMailRequestBody,
+    responses=sendForgetPasswordMailResponses
 )
 @api_view(['POST'])
 @authentication_classes([BasicAuthentication])
@@ -85,24 +64,8 @@ def sendForgetPasswordMail(request):
     tags=["Authentication"],
     operation_summary="驗證註冊驗證碼",
     operation_description="只限一般使用者使用",
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'code': openapi.Schema(
-                type=openapi.TYPE_STRING,
-                description='Register verification code.'
-            ),
-            'userID': openapi.Schema(
-                type=openapi.TYPE_INTEGER,
-                description='User id.'
-            )
-        },
-    ),
-    responses={
-            200: '{ "message": "Verified successful.", "user": UserObject }',
-            400: '{ "message": "Verified failed." } or { "message": "Verification code has expired." }',
-            404: str(NotFoundResponse('EmailVerifyCode'))
-    }
+    request_body=authenticationRegisterCodeRequestBody,
+    responses=authenticationRegisterCodeResponses
 )
 @api_view(['POST'])
 @authentication_classes([BasicAuthentication])
@@ -135,24 +98,8 @@ def authenticationRegisterCode(request):
     tags=["Authentication"],
     operation_summary="驗證忘記密碼驗證碼",
     operation_description="只限一般使用者使用",
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'code': openapi.Schema(
-                type=openapi.TYPE_STRING,
-                description='Register verification code.'
-            ),
-            'userID': openapi.Schema(
-                type=openapi.TYPE_INTEGER,
-                description='User id.'
-            )
-        },
-    ),
-    responses={
-            200: '{ "message": "Verified successful." }',
-            400: '{ "message": "Verified failed." } or { "message": "Verification code has expired." }',
-            404: str(NotFoundResponse('EmailVerifyCode'))
-    }
+    request_body=authenticationForgetPasswordCodeRequestBody,
+    responses=authenticationForgetPasswordCodeResponses
 )
 @api_view(['POST'])
 @authentication_classes([BasicAuthentication])

@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-from ..models import Food
+from ..models import Food, FoodType, Store
 from ..serializers import FoodSerializer
 from ..utils.response import *
 from ..swagger.food import *
@@ -16,15 +16,12 @@ from ..swagger.food import *
     tags=["Food"],
     operation_summary='查詢全部食物',
     operation_description="",
-    responses={
-        200: FoodSerializer,
-        404: str(NotFoundResponse('Food'))
-    }
+    responses=getAllFoodResponses
 )
 @api_view(['GET'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def getAllFoodType(request):
+def getAllFood(request):
     all_food = Food.objects.all()
     serializer = FoodSerializer(all_food, many=True)
 
@@ -34,32 +31,44 @@ def getAllFoodType(request):
         return Response(serializer.data)
 
 
-# @swagger_auto_schema(
-#     methods=['POST'],
-#     tags=["Food"],
-#     operation_summary="添加食物",
-#     operation_description="",
-#     request_body=openapi.Schema(
-#         type=openapi.TYPE_OBJECT,
-#         properties=addFoodTypeRequestBody
-#     ),
-#     responses={
-#         200: FoodSerializer,
-#         400: '{ "message": "FoodType already exists.", "foodType": FoodTypeObject }'
-#     }
-# )
-# @api_view(['POST'])
-# @authentication_classes([BasicAuthentication])
-# @permission_classes([IsAuthenticated])
-# def addFoodType(request):
+@swagger_auto_schema(
+    methods=['POST'],
+    tags=["Food"],
+    operation_summary="添加食物",
+    operation_description="",
+    request_body=addFoodRequestBody,
+    responses=addFoodResponses
+)
+@api_view(['POST'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def addFood(request):
+    try:
+        foodType = FoodType.objects.get(id=request.data['food_type_id'])
+        store = Store.objects.get(id=request.data['store_id'])
+    except FoodType.DoesNotExist or Store.DoesNotExist:
+        return Response(FormatErrorResponse('Food'), status=400)
+    
+    food = request.data
+    newFood = {
+        "name": food['name'],
+        "calorie": food['calorie'],
+        "size": food['size'],
+        "unit": food['unit'],
+        "protein": food['protein'],
+        "fat": food['fat'],
+        "carb": food['carb'],
+        "sodium": food['sodium'],
+        "food_type": foodType,
+        "store": store
+    }
 
-#     try:
-#         oFoodType = FoodType.objects.get(name=request.data['type'])
-#         return Response({"message": "FoodType already exists.", "foodType": oFoodType}, status=400)
-#     except FoodType.DoesNotExist:
-#         newFoodType = FoodType.objects.create(name=request.data['type'])
-#         serializer = FoodTypeSerializer(newFoodType)
-#         return Response(serializer.data, status=200)
+    serializer = FoodSerializer(data=newFood)
+    if (serializer.is_valid()):
+        serializer.save()
+        return Response(serializer.data)
+    else:
+        return Response(FormatErrorResponse('Food'), status=400)
 
 
 # @swagger_auto_schema(

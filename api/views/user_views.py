@@ -58,10 +58,7 @@ def getUserById(request, id):
     tags=["Users"],
     operation_summary="添加一般使用者",
     operation_description="只適用於一般使用者，Google使用者不可，新增成功會回傳user資料",
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties=addUserRequestBody
-    ),
+    request_body=addUserRequestBody,
     responses=addUserResponses
 )
 @api_view(['POST'])
@@ -104,10 +101,7 @@ def addUser(request):
     tags=["Users"],
     operation_summary="更新使用者資料",
     operation_description="更新一般使用者之密碼與信箱，Google使用者無法更新，也可傳入完整users json",
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties=updateUserRequestBody
-    ),
+    request_body=updateUserRequestBody,
     responses=updateUserResponses
 )
 @api_view(['PUT'])
@@ -160,10 +154,7 @@ def deleteUser(request, id):
     tags=["Users"],
     operation_summary="一般使用者登入",
     operation_description="只限一般使用者登入使用，如果登入成功會回傳user資料",
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties=login_normalRequestBody
-    ),
+    request_body=login_normalRequestBody,
     responses=login_normalResponses
 )
 @api_view(['POST'])
@@ -187,10 +178,7 @@ def login_normal(request):
     tags=["Users"],
     operation_summary="Google使用者登入",
     operation_description="只限Google使用者登入使用，如果找得到email則回傳對應的user資料，找不到就新建一個後回傳user資料",
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties=login_googleRequestBody
-    ),
+    request_body=login_googleRequestBody,
     responses=login_googleResponses
 )
 @api_view(['POST'])
