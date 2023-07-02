@@ -7,3 +7,6 @@ drf_yasg
 python-dotenv
 python-magic
 pillow
+
+
+# pip install python-magic-bin==0.4.14

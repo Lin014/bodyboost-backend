@@ -13,7 +13,7 @@ from ..models import Users
 from ..serializers import UsersSerializer
 from ..utils.sendMail import sendRegisterMail
 from ..utils.response import *
-from ..swagger.user import *
+from ..swagger.users import *
 
 @swagger_auto_schema(
     methods=['GET'],

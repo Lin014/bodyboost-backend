@@ -60,3 +60,16 @@ addFoodResponses = {
     200: FoodSerializer,
     400: str(FormatErrorResponse('Food'))
 }
+
+# responses: updateFood
+updateFoodResponses = {
+    200: FoodSerializer,
+    400: str(FormatErrorResponse('Food')),
+    404: str(NotFoundResponse('Food'))
+}
+
+# responses: deleteFood
+deleteFoodResponses = {
+    200: '{ "message": "Food deleted successfully." }',
+    404: str(NotFoundResponse('Food'))
+}

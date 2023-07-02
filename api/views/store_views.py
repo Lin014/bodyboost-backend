@@ -9,16 +9,14 @@ from drf_yasg import openapi
 from ..models import Store
 from ..serializers import StoreSerializer
 from ..utils.response import *
+from ..swagger.store import *
 
 @swagger_auto_schema(
     methods=['GET'],
     tags=["Store"],
     operation_summary='查詢全部商店資料',
     operation_description="",
-    responses={
-            200: StoreSerializer,
-            404: str(NotFoundResponse('Store'))
-    }
+    responses=getAllStoreResponses
 )
 @api_view(['GET'])
 @authentication_classes([BasicAuthentication])
@@ -37,19 +35,8 @@ def getAllStore(request):
     tags=["Store"],
     operation_summary="添加商店資料",
     operation_description="",
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'name': openapi.Schema(
-                type=openapi.TYPE_STRING,
-                description='商店名稱'
-            )
-        }
-    ),
-    responses={
-            200: StoreSerializer,
-            400: '{ "message": "Store already exists.", "store": StoreObject }'
-    }
+    request_body=addStoreRequestBody,
+    responses=addStoreResponses
 )
 @api_view(['POST'])
 @authentication_classes([BasicAuthentication])
@@ -69,19 +56,8 @@ def addStore(request):
     tags=["Store"],
     operation_summary="更新商店資料",
     operation_description="",
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'name': openapi.Schema(
-                type=openapi.TYPE_STRING,
-                description='商店名稱'
-            ),
-        }
-    ),
-    responses={
-            200: StoreSerializer,
-            404: str(NotFoundResponse('Store'))
-    }
+    request_body=updateStoreRequestBody,
+    responses=updateStoreResponses
 )
 @api_view(['PUT'])
 @authentication_classes([BasicAuthentication])
@@ -103,10 +79,7 @@ def updateStore(request, id):
     tags=["Store"],
     operation_summary='刪除指定id的商店資料',
     operation_description="輸入id，刪除商店資料",
-    responses={
-            200: '{ "message": "Store deleted successfully." }',
-            404: str(NotFoundResponse('Store'))
-    }
+    responses=deleteStoreResponses
 )
 @api_view(['DELETE'])
 @authentication_classes([BasicAuthentication])

@@ -71,59 +71,60 @@ def addFood(request):
         return Response(FormatErrorResponse('Food'), status=400)
 
 
-# @swagger_auto_schema(
-#     methods=['PUT'],
-#     tags=["FoodType"],
-#     operation_summary="更新食物類別",
-#     operation_description="",
-#     request_body=openapi.Schema(
-#         type=openapi.TYPE_OBJECT,
-#         properties={
-#             'type': openapi.Schema(
-#                 type=openapi.TYPE_STRING,
-#                 description='食物類別'
-#             ),
-#         }
-#     ),
-#     responses={
-#         200: FoodTypeSerializer,
-#         404: str(NotFoundResponse('FoodType'))
-#     }
-# )
-# @api_view(['PUT'])
-# @authentication_classes([BasicAuthentication])
-# @permission_classes([IsAuthenticated])
-# def updateFoodType(request, id):
-#     try:
-#         updateFoodType = FoodType.objects.get(id=id)
-#     except FoodType.DoesNotExist:
-#         return Response(NotFoundResponse('FoodType'), status=404)
+@swagger_auto_schema(
+    methods=['PUT'],
+    tags=["Food"],
+    operation_summary="更新食物",
+    operation_description="",
+    request_body=addFoodRequestBody,
+    responses=updateFoodResponses
+)
+@api_view(['PUT'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def updateFood(request, id):
+    try:
+        updateFood = Food.objects.get(id=id)
+    except Food.DoesNotExist:
+        return Response(NotFoundResponse('Food'), status=404)
+    
+    try:
+        foodType = FoodType.objects.get(id=request.data['food_type_id'])
+        store = Store.objects.get(id=request.data['store_id'])
+    except FoodType.DoesNotExist or Store.DoesNotExist:
+        return Response(FormatErrorResponse('Food'), status=400)
 
-#     updateFoodType.type = request.data['type']
-#     updateFoodType.save()
+    updateFood.name = request.data['name']
+    updateFood.calorie = request.data['calorie']
+    updateFood.size = request.data['size']
+    updateFood.unit = request.data['unit']
+    updateFood.protein = request.data['protein']
+    updateFood.fat = request.data['fat']
+    updateFood.carb = request.data['carb']
+    updateFood.sodium = request.data['sodium']
+    updateFood.food_type = foodType
+    updateFood.store = store
+    updateFood.save()
 
-#     serializer = FoodTypeSerializer(updateFoodType)
-#     return Response(serializer.data, status=200)
+    serializer = FoodSerializer(updateFood)
+    return Response(serializer.data, status=200)
 
 
-# @swagger_auto_schema(
-#     methods=['DELETE'],
-#     tags=["FoodType"],
-#     operation_summary='刪除指定id的食物類別',
-#     operation_description="輸入id，刪除食物類別",
-#     responses={
-#         200: '{ "message": "FoodType deleted successfully." }',
-#         404: str(NotFoundResponse('FoodType'))
-#     }
-# )
-# @api_view(['DELETE'])
-# @authentication_classes([BasicAuthentication])
-# @permission_classes([IsAuthenticated])
-# def deleteFoodType(request, id):
-#     try:
-#         delFoodType = FoodType.objects.get(id=id)
-#     except FoodType.DoesNotExist:
-#         return Response(NotFoundResponse('FoodType'), status=404)
+@swagger_auto_schema(
+    methods=['DELETE'],
+    tags=["Food"],
+    operation_summary='刪除指定id的食物',
+    operation_description="輸入id，刪除食物",
+    responses=deleteFoodResponses
+)
+@api_view(['DELETE'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def deleteFood(request, id):
+    try:
+        delFood = Food.objects.get(id=id)
+    except Food.DoesNotExist:
+        return Response(NotFoundResponse('Food'), status=404)
 
-#     delFoodType.delete()
-#     return Response({"message": "FoodType deleted successfully."}, status=200)
+    delFood.delete()
+    return Response({"message": "Food deleted successfully."}, status=200)

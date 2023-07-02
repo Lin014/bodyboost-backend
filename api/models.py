@@ -20,14 +20,14 @@ class Users(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 class Profile(models.Model):
-    gender_choices = [(1, 'Male'), (2, 'Female')]
+    gender_choices = [(1, 1), (2, 2)]
 
     name = models.CharField(max_length=50)
     gender = models.IntegerField(choices=gender_choices)
     birthday = models.DateField()
     height = models.FloatField()
     weight = models.FloatField()
-    image = models.ImageField(upload_to='profile_img', blank=False, null=False)
+    image = models.ImageField(upload_to='profile_img', default='')
     user = models.OneToOneField(Users, on_delete=models.CASCADE)
 
 class EmailVerifyCode(models.Model):
