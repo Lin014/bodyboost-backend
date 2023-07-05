@@ -39,7 +39,7 @@ class EmailVerifyCode(models.Model):
     email = models.EmailField()
     send_type = models.CharField(max_length=20, choices=send_type_choices)
     created_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(Users, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 
 class Store(models.Model):
     name = models.TextField()
@@ -56,42 +56,43 @@ class Food(models.Model):
     fat = models.FloatField()
     carb = models.FloatField()
     sodium = models.FloatField()
-    food_type = models.ForeignKey(FoodType, on_delete=models.SET(''))
-    store = models.ForeignKey(Store, on_delete=models.SET(''))
+    food_type_id = models.ForeignKey(FoodType, on_delete=models.SET(''))
+    store_id = models.ForeignKey(Store, on_delete=models.SET(''))
 
 class CustomFood(models.Model):
     name = models.TextField()
     calorie = models.FloatField()
-    size = models.FloatField(blank=False, null=False)
-    unit = models.CharField(max_length=30, blank=False, null=False)
-    protein = models.FloatField(blank=False, null=False)
-    fat = models.FloatField(blank=False, null=False)
-    carb = models.FloatField(blank=False, null=False)
-    sodium = models.FloatField(blank=False, null=False)
-    food_type = models.ForeignKey(FoodType, on_delete=models.SET(''))
-    user = models.ForeignKey(Users, on_delete=models.CASCADE)
+    size = models.FloatField(blank=True, null=True)
+    unit = models.CharField(max_length=30, blank=True, null=True)
+    protein = models.FloatField(blank=True, null=True)
+    fat = models.FloatField(blank=True, null=True)
+    carb = models.FloatField(blank=True, null=True)
+    sodium = models.FloatField(blank=True, null=True)
+    food_type_id = models.ForeignKey(FoodType, on_delete=models.SET(''))
+    store_id = models.ForeignKey(Store, on_delete=models.SET(''))
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 
 class DietRecordItem(models.Model):
     name = models.TextField()
     calorie = models.FloatField()
-    size = models.FloatField(blank=False, null=False)
-    unit = models.CharField(max_length=30, blank=False, null=False)
-    protein = models.FloatField(blank=False, null=False)
-    fat = models.FloatField(blank=False, null=False)
-    carb = models.FloatField(blank=False, null=False)
-    sodium = models.FloatField(blank=False, null=False)
-    food_type = models.ForeignKey(FoodType, on_delete=models.SET(''))
-    store = models.ForeignKey(Store, on_delete=models.SET(''), blank=False, null=False)
+    size = models.FloatField(blank=True, null=True)
+    unit = models.CharField(max_length=30, blank=True, null=True)
+    protein = models.FloatField(blank=True, null=True)
+    fat = models.FloatField(blank=True, null=True)
+    carb = models.FloatField(blank=True, null=True)
+    sodium = models.FloatField(blank=True, null=True)
+    food_type_id = models.ForeignKey(FoodType, on_delete=models.SET(''))
+    store_id = models.ForeignKey(Store, on_delete=models.SET(''), blank=False, null=False)
 
 class DietRecord(models.Model):
     time = models.DateTimeField()
-    label = models.TextField(blank=False, null=False)
-    user = models.ForeignKey(Users, on_delete=models.CASCADE)
-    food = models.ForeignKey(DietRecordItem, on_delete=models.CASCADE)
+    label = models.TextField(blank=True, null=True)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+    food_id = models.ForeignKey(DietRecordItem, on_delete=models.CASCADE)
 
 class Sport(models.Model):
     name = models.TextField()
-    description = models.TextField(blank=False, null=False)
+    description = models.TextField(blank=True, null=True)
     default_time = models.FloatField()
     interval = models.FloatField()
     is_count = models.BooleanField()
@@ -106,7 +107,7 @@ class SportFrequency(models.Model):
 class SportGroup(models.Model):
     name = models.TextField()
     rest_time = models.FloatField()
-    user = models.ForeignKey(Users, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 
 class SportGroupItem(models.Model):
     mode_choices = (
@@ -116,9 +117,9 @@ class SportGroupItem(models.Model):
 
     mode = models.CharField(max_length=20, choices=mode_choices)
     custom_time = models.FloatField()
-    custom_counts = models.IntegerField(blank=False, null=False)
-    sport = models.ForeignKey(Sport, on_delete=models.CASCADE)
-    sport_group = models.ForeignKey(SportGroup, on_delete=models.CASCADE)
+    custom_counts = models.IntegerField(blank=True, null=True)
+    sport_id = models.ForeignKey(Sport, on_delete=models.CASCADE)
+    sport_group_id = models.ForeignKey(SportGroup, on_delete=models.CASCADE)
 
 class SportRecord(models.Model):
     type_choices = (
@@ -128,12 +129,12 @@ class SportRecord(models.Model):
 
     type = models.CharField(max_length=20, choices=type_choices)
     start_time = models.DateTimeField()
-    end_time = models.DateTimeField(blank=False, null=False)
+    end_time = models.DateTimeField(blank=True, null=True)
     total_time = models.FloatField(default=0)
     total_consumed_kcal = models.FloatField(default=0)
     cur_sport_no = models.IntegerField(default=1)
     is_record_video = models.BooleanField(default=False)
-    user = models.ForeignKey(Users, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 
 class SportRecordItem(models.Model):
     mode_choices = (
@@ -143,7 +144,7 @@ class SportRecordItem(models.Model):
 
     # copy sport field
     name = models.TextField()
-    description = models.TextField(blank=False, null=False)
+    description = models.TextField(blank=True, null=True)
     default_time = models.FloatField()
     interval = models.FloatField()
     is_count = models.BooleanField()
@@ -155,5 +156,5 @@ class SportRecordItem(models.Model):
     time = models.FloatField(default=0)
     counts = models.IntegerField(default=0)
     consumed_kcal = models.FloatField(default=0)
-    sport_record = models.ForeignKey(SportRecord, on_delete=models.CASCADE)
-    video = models.FileField(upload_to='record_video', blank=False, null=False)
+    sport_record_id = models.ForeignKey(SportRecord, on_delete=models.CASCADE)
+    video = models.FileField(upload_to='record_video', blank=True, null=True)

@@ -44,10 +44,10 @@ def getAllFoodType(request):
 def addFoodType(request):
 
     try:
-        oFoodType = FoodType.objects.get(name=request.data['type'])
+        oFoodType = FoodType.objects.get(type=request.data['type'])
         return Response({ "message": "FoodType already exists.", "foodType": oFoodType }, status=400)
     except FoodType.DoesNotExist:
-        newFoodType = FoodType.objects.create(name=request.data['type'])
+        newFoodType = FoodType.objects.create(type=request.data['type'])
         serializer = FoodTypeSerializer(newFoodType)
         return Response(serializer.data, status=200)
 

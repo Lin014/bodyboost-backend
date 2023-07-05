@@ -49,19 +49,7 @@ def addFood(request):
     except FoodType.DoesNotExist or Store.DoesNotExist:
         return Response(FormatErrorResponse('Food'), status=400)
     
-    food = request.data
-    newFood = {
-        "name": food['name'],
-        "calorie": food['calorie'],
-        "size": food['size'],
-        "unit": food['unit'],
-        "protein": food['protein'],
-        "fat": food['fat'],
-        "carb": food['carb'],
-        "sodium": food['sodium'],
-        "food_type": foodType,
-        "store": store
-    }
+    newFood = request.data
 
     serializer = FoodSerializer(data=newFood)
     if (serializer.is_valid()):
@@ -102,8 +90,8 @@ def updateFood(request, id):
     updateFood.fat = request.data['fat']
     updateFood.carb = request.data['carb']
     updateFood.sodium = request.data['sodium']
-    updateFood.food_type = foodType
-    updateFood.store = store
+    updateFood.food_type_id = request.data['food_type_id']
+    updateFood.store_id = request.data['store_id']
     updateFood.save()
 
     serializer = FoodSerializer(updateFood)
