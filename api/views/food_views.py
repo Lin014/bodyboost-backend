@@ -90,8 +90,9 @@ def updateFood(request, id):
     updateFood.fat = request.data['fat']
     updateFood.carb = request.data['carb']
     updateFood.sodium = request.data['sodium']
-    updateFood.food_type_id = request.data['food_type_id']
-    updateFood.store_id = request.data['store_id']
+    updateFood.modify = request.data['modify']
+    updateFood.food_type_id = foodType
+    updateFood.store_id = store
     updateFood.save()
 
     serializer = FoodSerializer(updateFood)

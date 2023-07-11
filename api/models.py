@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import date
 
+# done
 class Users(models.Model):
     status_choices = [ 
         ('success', 'Success'), 
@@ -19,6 +20,7 @@ class Users(models.Model):
     status = models.CharField(max_length=20, choices=status_choices)
     created_at = models.DateTimeField(auto_now_add=True)
 
+# done
 class Profile(models.Model):
     gender_choices = [(1, 1), (2, 2)]
 
@@ -30,6 +32,7 @@ class Profile(models.Model):
     image = models.ImageField(upload_to='profile_img', default='')
     user = models.OneToOneField(Users, on_delete=models.CASCADE)
 
+# done
 class EmailVerifyCode(models.Model):
     send_type_choices = (
         ('register', '註冊'),
@@ -41,12 +44,15 @@ class EmailVerifyCode(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 
+# done
 class Store(models.Model):
     name = models.TextField()
 
+# done
 class FoodType(models.Model):
     type = models.TextField()
 
+# done
 class Food(models.Model):
     name = models.TextField()
     calorie = models.FloatField()
@@ -56,9 +62,11 @@ class Food(models.Model):
     fat = models.FloatField()
     carb = models.FloatField()
     sodium = models.FloatField()
+    modify = models.BooleanField()
     food_type_id = models.ForeignKey(FoodType, on_delete=models.SET(''))
     store_id = models.ForeignKey(Store, on_delete=models.SET(''))
 
+# done
 class CustomFood(models.Model):
     name = models.TextField()
     calorie = models.FloatField()
@@ -72,7 +80,10 @@ class CustomFood(models.Model):
     store_id = models.ForeignKey(Store, on_delete=models.SET(''))
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 
-class DietRecordItem(models.Model):
+class DietRecord(models.Model):
+    date = models.DateTimeField()
+    serving_amount = models.FloatField(blank=True, null=True) #
+    label = models.TextField(blank=True, null=True)
     name = models.TextField()
     calorie = models.FloatField()
     size = models.FloatField(blank=True, null=True)
@@ -81,14 +92,10 @@ class DietRecordItem(models.Model):
     fat = models.FloatField(blank=True, null=True)
     carb = models.FloatField(blank=True, null=True)
     sodium = models.FloatField(blank=True, null=True)
+    modify = models.BooleanField(blank=True, null=True) #
     food_type_id = models.ForeignKey(FoodType, on_delete=models.SET(''))
     store_id = models.ForeignKey(Store, on_delete=models.SET(''))
-
-class DietRecord(models.Model):
-    time = models.DateTimeField()
-    label = models.TextField(blank=True, null=True)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
-    dietRecordItem_id = models.ForeignKey(DietRecordItem, on_delete=models.CASCADE)
 
 class Sport(models.Model):
     name = models.TextField()

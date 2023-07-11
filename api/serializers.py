@@ -31,3 +31,8 @@ class CustomFoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomFood
         fields = '__all__'
+
+class DietRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DietRecord
+        fields = '__all__'
