@@ -29,7 +29,7 @@ def sendRegisterMail(email, user):
         code = code,
         email = email,
         send_type = 'register',
-        user = user
+        user_id = user
     )
     
     sendTitle = "歡迎註冊 Body Boost APP 會員帳號！"

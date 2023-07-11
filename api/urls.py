@@ -28,7 +28,7 @@ urlpatterns = [
     path('users/login/normal/', user_views.login_normal),
     path('users/login/google/', user_views.login_google),
     # authentication
-    path('authentication/resendRegisterMail/<int:id>/', authentication_views.resendRegisterMail),
+    path('authentication/resendRegisterMail/', authentication_views.resendRegisterMail),
     path('authentication/sendForgetPasswordMail/', authentication_views.sendForgetPasswordMail),
     path('authentication/authenticationRegisterCode/', authentication_views.authenticationRegisterCode),
     path('authentication/authenticationForgetPasswordCode/', authentication_views.authenticationForgetPasswordCode),

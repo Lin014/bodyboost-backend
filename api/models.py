@@ -48,7 +48,7 @@ class FoodType(models.Model):
     type = models.TextField()
 
 class Food(models.Model):
-    name = models.TextField
+    name = models.TextField()
     calorie = models.FloatField()
     size = models.FloatField()
     unit = models.CharField(max_length=30)
@@ -82,13 +82,13 @@ class DietRecordItem(models.Model):
     carb = models.FloatField(blank=True, null=True)
     sodium = models.FloatField(blank=True, null=True)
     food_type_id = models.ForeignKey(FoodType, on_delete=models.SET(''))
-    store_id = models.ForeignKey(Store, on_delete=models.SET(''), blank=False, null=False)
+    store_id = models.ForeignKey(Store, on_delete=models.SET(''))
 
 class DietRecord(models.Model):
     time = models.DateTimeField()
     label = models.TextField(blank=True, null=True)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
-    food_id = models.ForeignKey(DietRecordItem, on_delete=models.CASCADE)
+    dietRecordItem_id = models.ForeignKey(DietRecordItem, on_delete=models.CASCADE)
 
 class Sport(models.Model):
     name = models.TextField()

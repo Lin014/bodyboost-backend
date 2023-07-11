@@ -74,14 +74,14 @@ WSGI_APPLICATION = 'bodyboost.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'bodyboost',
+        'NAME': 'bodyboost-data',
         'USER': os.getenv('DATABASE_USER'),
         'PASSWORD': os.getenv('DATABASE_PASSWORD'),
         'HOST': os.getenv('DATABASE_HOST'),
         'PORT': 5432,
-        'OPTIONS': {
-            'options': '-c search_path=bodyboost_data'
-        }
+        # 'OPTIONS': {
+        #     'options': '-c search_path=bodyboost_data'
+        # }
     }
 }
 
