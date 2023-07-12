@@ -13,22 +13,21 @@ from ..swagger.dietrecord import *
 @swagger_auto_schema(
     methods=['GET'],
     tags=["DietRecord"],
-    operation_summary='查詢全部飲食紀錄',
-    operation_description="",
-    responses=getAllDietRecordResponses
+    operation_summary='查詢指定使用者飲食紀錄',
+    operation_description="輸入id，查詢使用者飲食紀錄",
+    responses=getDietRecordByIdResponses
 )
 @api_view(['GET'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def getAllDietRecord(request):
-    all_food = DietRecord.objects.all()
-    serializer = DietRecordSerializer(all_food, many=True)
-
-    if (serializer.data == []):
+def getDietRecordById(request, id):
+    try:
+        all_dietRecord = DietRecord.objects.filter(user_id=id)
+        serializer = DietRecordSerializer(all_dietRecord, many=True)
+        return Response(serializer.data, status=200)
+    except DietRecord.DoesNotExist:
         return Response(NotFoundResponse('DietRecord'), status=404)
-    else:
-        return Response(serializer.data)
-
+    
 @swagger_auto_schema(
     methods=['POST'],
     tags=["DietRecord"],
@@ -60,7 +59,7 @@ def addDietRecord(request):
 @swagger_auto_schema(
     methods=['PUT'],
     tags=["DietRecord"],
-    operation_summary="更新食物",
+    operation_summary="更新飲食紀錄",
     operation_description="",
     request_body=addDietRecordRequestBody,
     responses=updateDietRecordResponses
@@ -96,3 +95,22 @@ def updateDietRecord(request, id):
 
     serializer = DietRecordSerializer(updateDietRecord)
     return Response(serializer.data, status=200)
+
+@swagger_auto_schema(
+    methods=['DELETE'],
+    tags=["DietRecord"],
+    operation_summary='刪除指定id的飲食紀錄',
+    operation_description="輸入id，刪除飲食紀錄",
+    responses=deleteDietRecordResponses
+)
+@api_view(['DELETE'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def deleteDietRecord(request, id):
+    try:
+        delFood = DietRecord.objects.get(id=id)
+    except DietRecord.DoesNotExist:
+        return Response(NotFoundResponse('DietRecord'), status=404)
+
+    delFood.delete()
+    return Response({"message": "DietRecord deleted successfully."}, status=200)

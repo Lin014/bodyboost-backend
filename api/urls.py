@@ -63,6 +63,8 @@ urlpatterns = [
    path('customfood/update/<int:id>', customfood_views.updateCustomFood),
    path('customfood/delete/<int:id>', customfood_views.deleteCustomFood),
    # dietrecord
-   path('dietrecord/', dietrecord_views.getAllDietRecord),
+   path('dietrecord/<int:id>', dietrecord_views.getDietRecordById),
    path('dietrecord/add/', dietrecord_views.addDietRecord),
+   path('dietrecord/update/<int:id>', dietrecord_views.updateDietRecord),
+   path('dietrecord/delete/<int:id>', dietrecord_views.deleteDietRecord),
 ] + static(MEDIA_URL, document_root=MEDIA_ROOT)

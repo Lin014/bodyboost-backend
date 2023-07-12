@@ -3,8 +3,8 @@ from drf_yasg import openapi
 from ..serializers import DietRecordSerializer
 from ..utils.response import *
 
-# responses: getAllDietRecord
-getAllDietRecordResponses = {
+# responses: getDietRecordById
+getDietRecordByIdResponses = {
     200: DietRecordSerializer,
     404: str(NotFoundResponse('DietRecord'))
 }
@@ -84,5 +84,11 @@ addDietRecordResponses = {
 # responses: updateDietRecord
 updateDietRecordResponses = {
     200: DietRecordSerializer,
+    404: str(NotFoundResponse('DietRecord'))
+}
+
+# responses: deleteDietRecord
+deleteDietRecordResponses = {
+    200: str({"message": "Food deleted successfully."}),
     404: str(NotFoundResponse('DietRecord'))
 }
