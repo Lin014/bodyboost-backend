@@ -39,24 +39,37 @@ addUserResponses = {
     400: '{ "created": False, "message": "Duplicate account and/or password" } or ' + str(FormatErrorResponse('User'))
 }
 
-# request_body: updateUser
-updateUserRequestBody = openapi.Schema(
+# request_body: updateUserPassword
+updateUserPasswordRequestBody = openapi.Schema(
     type=openapi.TYPE_OBJECT,
     properties={
         'password': openapi.Schema(
             type=openapi.TYPE_STRING,
             description='User password'
         ),
+    }
+)
+# responses: updateUserPassword
+updateUserPasswordResponses = {
+    200: UsersSerializer,
+    400: '{ "message": "User cannot be changed." }',
+    404: str(NotFoundResponse('User'))
+}
+
+# request_body: updateUserEmail
+updateUserEmailRequestBody = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
         'email': openapi.Schema(
             type=openapi.TYPE_STRING,
             description='User email'
         )
     }
 )
-# responses: updateUser
-updateUserResponses = {
+# responses: updateUserEmail
+updateUserEmailResponses = {
     200: UsersSerializer,
-    400: str(FormatErrorResponse('Email')) + ' or { "message": "User cannot be changed." }',
+    400: '{ "message": "Duplicate email."}' + str(FormatErrorResponse('Email')) + ' or { "message": "User cannot be changed." }',
     404: str(NotFoundResponse('User'))
 }
 

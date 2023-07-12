@@ -44,6 +44,7 @@ class EmailVerifyCode(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 
+# done
 class DailyBonus(models.Model):
     date = models.DateTimeField(default=timezone.now)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
@@ -84,6 +85,7 @@ class CustomFood(models.Model):
     store_id = models.ForeignKey(Store, on_delete=models.SET(''))
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 
+# done
 class DietRecord(models.Model):
     date = models.DateTimeField()
     serving_amount = models.FloatField(blank=True, null=True) #

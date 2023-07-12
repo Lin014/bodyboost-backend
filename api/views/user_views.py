@@ -99,15 +99,15 @@ def addUser(request):
 @swagger_auto_schema(
     methods=['PUT'],
     tags=["Users"],
-    operation_summary="更新使用者資料",
-    operation_description="更新一般使用者之密碼與信箱，Google使用者無法更新，也可傳入完整users json",
-    request_body=updateUserRequestBody,
-    responses=updateUserResponses
+    operation_summary="更新使用者密碼",
+    operation_description="更新一般使用者之密碼，Google使用者無法更新，也可傳入完整users json",
+    request_body=updateUserPasswordRequestBody,
+    responses=updateUserPasswordResponses
 )
 @api_view(['PUT'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def updateUser(request, id):
+def updateUserPassword(request, id):
     try:
         updateUser = Users.objects.get(id=id)
     except Users.DoesNotExist:
@@ -116,18 +116,53 @@ def updateUser(request, id):
     user = request.data
     if (updateUser.created_type == 'normal'):
         updateUser.password = make_password(user['password'])
-        updateUser.email = user['email']
 
         serializer = UsersSerializer(updateUser)
-        email_validator = EmailValidator()
-        try:
-            email_validator(updateUser.email)
-            updateUser.save()
-            return Response(serializer.data, status=200)
-        except:
-            return Response(FormatErrorResponse('Email'), status=400)
+        updateUser.save()
+        return Response(serializer.data, status=200)
     else:
         return Response({ "message": "User cannot be changed." }, status=400)
+
+@swagger_auto_schema(
+    methods=['PUT'],
+    tags=["Users"],
+    operation_summary="更新使用者信箱",
+    operation_description="更新一般使用者之信箱，Google使用者無法更新，也可傳入完整users json",
+    request_body=updateUserEmailRequestBody,
+    responses=updateUserEmailResponses
+)
+@api_view(['PUT'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def updateUserEmail(request, id):
+    try:
+        updateUser = Users.objects.get(id=id)
+    except Users.DoesNotExist:
+        return Response(NotFoundResponse('User'), status=404)
+    
+    try:
+        emailUser = Users.objects.get(email=request.data['email'], created_type='normal')
+        if (updateUser.id == emailUser.id):
+            user = request.data
+            if (updateUser.created_type == 'normal'):
+                updateUser.email = user['email']
+                updateUser.status = 'unverified'
+
+                serializer = UsersSerializer(updateUser)
+                email_validator = EmailValidator()
+                try:
+                    email_validator(updateUser.email)
+                    updateUser.save()
+                    sendRegisterMail(updateUser.email, updateUser)
+                    return Response(serializer.data, status=200)
+                except:
+                    return Response(FormatErrorResponse('Email'), status=400)
+            else:
+                return Response({ "message": "User cannot be changed." }, status=400)
+        else:
+            return Response({ "message": "Duplicate email."}, status=400)
+    except Users.DoesNotExist:
+        return Response(NotFoundResponse('User'), status=404)
    
 
 @swagger_auto_schema(
