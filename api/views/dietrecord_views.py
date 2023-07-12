@@ -49,9 +49,6 @@ def addDietRecord(request):
         return Response(FormatErrorResponse('DietRecord'), status=400)
     
     newDietRecord = request.data
-    newDietRecord['food_type_id'] = foodType
-    newDietRecord['store_id'] = store
-    newDietRecord['user_id'] = user
 
     serializer = DietRecordSerializer(data=newDietRecord)
     if (serializer.is_valid()):
@@ -65,8 +62,8 @@ def addDietRecord(request):
     tags=["DietRecord"],
     operation_summary="更新食物",
     operation_description="",
-    request_body=addFoodRequestBody,
-    responses=updateFoodResponses
+    request_body=addDietRecordRequestBody,
+    responses=updateDietRecordResponses
 )
 @api_view(['PUT'])
 @authentication_classes([BasicAuthentication])

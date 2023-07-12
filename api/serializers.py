@@ -36,3 +36,8 @@ class DietRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = DietRecord
         fields = '__all__'
+
+class DailyBonusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DailyBonus
+        fields = '__all__'

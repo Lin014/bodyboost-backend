@@ -1,5 +1,5 @@
 from django.db import models
-from datetime import date
+from django.utils import timezone
 
 # done
 class Users(models.Model):
@@ -42,6 +42,10 @@ class EmailVerifyCode(models.Model):
     email = models.EmailField()
     send_type = models.CharField(max_length=20, choices=send_type_choices)
     created_at = models.DateTimeField(auto_now_add=True)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+
+class DailyBonus(models.Model):
+    date = models.DateTimeField(default=timezone.now)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 
 # done
