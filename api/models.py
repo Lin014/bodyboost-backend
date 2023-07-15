@@ -12,6 +12,10 @@ class Users(models.Model):
         ('normal', 'Normal'),
         ('google', 'Google') 
     ]
+    member_type_choices = [ 
+        ('normal', 'Normal'),
+        ('premium', 'Premium') 
+    ]
 
     account = models.CharField(max_length=30)
     password = models.CharField(max_length=200, blank=True, null=True)
@@ -19,6 +23,7 @@ class Users(models.Model):
     created_type = models.CharField(max_length=20, choices=created_type_choices)
     status = models.CharField(max_length=20, choices=status_choices)
     created_at = models.DateTimeField(auto_now_add=True)
+    member_type = models.CharField(max_length=10, default='normal', choices=member_type_choices)
 
 # done
 class Profile(models.Model):
@@ -109,10 +114,8 @@ class Sport(models.Model):
     default_time = models.FloatField()
     interval = models.FloatField()
     is_count = models.BooleanField()
-    animation = models.FileField(upload_to='animation_video')
-    image = models.ImageField(upload_to='animation_img')
     met = models.FloatField()
-
+    
 class SportFrequency(models.Model):
     frequency = models.IntegerField()
     sport = models.OneToOneField(Sport, on_delete=models.CASCADE)
@@ -125,11 +128,13 @@ class SportGroup(models.Model):
 class SportGroupItem(models.Model):
     mode_choices = (
         ('timing', '計時'),
-        ('counting', '計次')
+        ('counting', '計次'),
+        ('none', '無限制')
     )
 
+    no = models.IntegerField()
     mode = models.CharField(max_length=20, choices=mode_choices)
-    custom_time = models.FloatField()
+    custom_time = models.FloatField(blank=True, null=True)
     custom_counts = models.IntegerField(blank=True, null=True)
     sport_id = models.ForeignKey(Sport, on_delete=models.CASCADE)
     sport_group_id = models.ForeignKey(SportGroup, on_delete=models.CASCADE)
@@ -147,27 +152,51 @@ class SportRecord(models.Model):
     total_consumed_kcal = models.FloatField(default=0)
     cur_sport_no = models.IntegerField(default=1)
     is_record_video = models.BooleanField(default=False)
+    is_completed = models.BooleanField(default=False)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 
 class SportRecordItem(models.Model):
     mode_choices = (
         ('timing', '計時'),
-        ('counting', '計次')
+        ('counting', '計次'),
+        ('none', '無限制')
     )
 
     # copy sport field
     name = models.TextField()
     description = models.TextField(blank=True, null=True)
-    default_time = models.FloatField()
+    custom_time = models.FloatField()
     interval = models.FloatField()
     is_count = models.BooleanField()
-    animation = models.FileField(upload_to='animation_video')
-    image = models.ImageField(upload_to='animation_img')
     met = models.FloatField()
     # other field
+    no = models.IntegerField()
     mode = models.CharField(max_length=20, choices=mode_choices)
     time = models.FloatField(default=0)
     counts = models.IntegerField(default=0)
     consumed_kcal = models.FloatField(default=0)
     sport_record_id = models.ForeignKey(SportRecord, on_delete=models.CASCADE)
     video = models.FileField(upload_to='record_video', blank=True, null=True)
+
+class AnimatedCharacter(models.Model):
+    name = models.CharField(max_length=15)
+    animation = models.FileField(upload_to='animation_video')
+    image = models.ImageField(upload_to='animation_img')
+    sport_id = models.ForeignKey(Sport, on_delete=models.CASCADE)
+
+class Accuracy(models.Model):
+    accuracy = models.FloatField()
+    label = models.CharField(max_length=15)
+    sport_record_item_id = models.ForeignKey(SportRecordItem, on_delete=models.CASCADE)
+
+class Setting(models.Model):
+    theme_choices = (
+        ('light', '日間'),
+        ('dark', '夜間')
+    )
+
+    theme = models.CharField(max_length=10, choices=theme_choices)
+    anim_char_name = models.CharField(max_length=15)
+    is_alerted = models.BooleanField(default=False)
+    alert_time = models.DateTimeField()
+
