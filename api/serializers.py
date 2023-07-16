@@ -41,3 +41,51 @@ class DailyBonusSerializer(serializers.ModelSerializer):
     class Meta:
         model = DailyBonus
         fields = '__all__'
+
+class SportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sport
+        fields = '__all__'
+
+class SportFrequencySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SportFrequency
+        fields = '__all__'
+
+class SportGroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SportGroup
+        fields = '__all__'
+
+class SportGroupItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SportGroupItem
+        fields = '__all__'
+
+class SportRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SportRecord
+        fields = '__all__'
+
+class SportRecordItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SportRecordItem
+        fields = '__all__'
+
+class AnimatedCharacterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AnimatedCharacter
+        fields = '__all__'
+
+class AccuracySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Accuracy
+        fields = '__all__'
+
+class SettingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Setting
+        fields = '__all__'
+
+
+    

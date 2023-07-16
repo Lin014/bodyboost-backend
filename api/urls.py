@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf.urls.static import static
 
-from .views import dailybonus_views, dietrecord_views, user_views, profile_views, authentication_views, store_views, foodtype_views, food_views, customfood_views
+from .views import sportfrequency_views, sport_views, dailybonus_views, dietrecord_views, user_views, profile_views, authentication_views, store_views, foodtype_views, food_views, customfood_views
 
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -68,4 +68,14 @@ urlpatterns = [
    path('dietrecord/add/', dietrecord_views.addDietRecord),
    path('dietrecord/update/<int:id>', dietrecord_views.updateDietRecord),
    path('dietrecord/delete/<int:id>', dietrecord_views.deleteDietRecord),
+   # sport
+   path('sport/', sport_views.getAllSport),
+   path('sport/<int:id>', sport_views.getSportById),
+   path('sport/add/', sport_views.addSport),
+   path('sport/update/<int:id>', sport_views.updateSport),
+   path('sport/delete/<int:id>', sport_views.deleteSport),
+   # sportfrequency
+   path('sportfrequency/', sportfrequency_views.getAllSportFrequency),
+   path('sportfrequency/add/', sportfrequency_views.addSportFrequency),
+   path('sportfrequency/delete/<int:id>', sportfrequency_views.deleteSportFrequency),
 ] + static(MEDIA_URL, document_root=MEDIA_ROOT)

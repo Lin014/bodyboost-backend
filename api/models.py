@@ -108,6 +108,7 @@ class DietRecord(models.Model):
     store_id = models.ForeignKey(Store, on_delete=models.SET(''))
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 
+# done
 class Sport(models.Model):
     name = models.TextField()
     description = models.TextField(blank=True, null=True)
@@ -115,7 +116,8 @@ class Sport(models.Model):
     interval = models.FloatField()
     is_count = models.BooleanField()
     met = models.FloatField()
-    
+
+#done
 class SportFrequency(models.Model):
     frequency = models.IntegerField()
     sport = models.OneToOneField(Sport, on_delete=models.CASCADE)
