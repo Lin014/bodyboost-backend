@@ -117,16 +117,18 @@ class Sport(models.Model):
     is_count = models.BooleanField()
     met = models.FloatField()
 
-#done
+# done
 class SportFrequency(models.Model):
     frequency = models.IntegerField()
     sport = models.OneToOneField(Sport, on_delete=models.CASCADE)
 
+# done
 class SportGroup(models.Model):
     name = models.TextField()
     rest_time = models.FloatField()
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 
+# done
 class SportGroupItem(models.Model):
     mode_choices = (
         ('timing', '計時'),

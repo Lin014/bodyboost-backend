@@ -13,7 +13,7 @@ from ..swagger.sportfrequency import *
 @swagger_auto_schema(
     methods=['GET'],
     tags=["SportFrequency"],
-    operation_summary='查詢全部運動頻率',
+    operation_summary='查詢全部運動頻率，呈運動頻率遞減排序',
     operation_description="",
     responses=getAllSportFrequencyResponses
 )
