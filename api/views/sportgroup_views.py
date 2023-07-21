@@ -26,6 +26,9 @@ def getSportGroupByUserId(request, id):
     except SportGroup.DoesNotExist:
         return Response(NotFoundResponse('SportGroup'), status=404)
     
+    if (len(sportGroups) == 0):
+        return Response(NotFoundResponse('SportGroup'), status=404)
+
     allSportGroup = SportGroupSerializer(sportGroups, many=True).data
     for sportGroup in allSportGroup:
         try:
@@ -199,7 +202,7 @@ def updateOnlySportGroup(request, id):
 def deleteSportGroup(request, id):
     try:
         delSportGroup = SportGroup.objects.get(id=id)
-    except Sport.DoesNotExist:
+    except SportGroup.DoesNotExist:
         return Response(NotFoundResponse('SportGroup'), status=404)
 
     delSportGroup.delete()

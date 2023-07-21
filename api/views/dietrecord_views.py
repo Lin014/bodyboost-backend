@@ -23,6 +23,9 @@ from ..swagger.dietrecord import *
 def getDietRecordById(request, id):
     try:
         all_dietRecord = DietRecord.objects.filter(user_id=id)
+
+        if (len(all_dietRecord) == 0):
+            return Response(NotFoundResponse('DietRecord'), status=404)
         serializer = DietRecordSerializer(all_dietRecord, many=True)
         return Response(serializer.data, status=200)
     except DietRecord.DoesNotExist:

@@ -15,7 +15,7 @@ addDietRecordRequestBody = openapi.Schema(
     properties={
         'date': openapi.Schema(
             type=openapi.TYPE_STRING,
-            description='食用日期，格式: yyyy-mm-dd, 範例: 2023-05-23'
+            description='食用日期，格式: yyyy-mm-dd hh:mm:ss, 範例: 2023-05-23 12:00:00'
         ),
         'serving_amount': openapi.Schema(
             type=openapi.TYPE_NUMBER,

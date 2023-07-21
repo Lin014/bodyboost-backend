@@ -149,8 +149,9 @@ class SportRecord(models.Model):
         ('combo', '組合運動')
     )
 
+    rest_time = models.FloatField(blank=True, null=True)
     type = models.CharField(max_length=20, choices=type_choices)
-    start_time = models.DateTimeField()
+    start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(blank=True, null=True)
     total_time = models.FloatField(default=0)
     total_consumed_kcal = models.FloatField(default=0)
@@ -158,6 +159,7 @@ class SportRecord(models.Model):
     is_record_video = models.BooleanField(default=False)
     is_completed = models.BooleanField(default=False)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+    sport_group_id = models.ForeignKey(SportGroup, on_delete=models.SET_NULL, blank=True, null=True)
 
 class SportRecordItem(models.Model):
     mode_choices = (
@@ -169,7 +171,8 @@ class SportRecordItem(models.Model):
     # copy sport field
     name = models.TextField()
     description = models.TextField(blank=True, null=True)
-    custom_time = models.FloatField()
+    custom_time = models.FloatField(blank=True, null=True)
+    custom_counts = models.IntegerField(blank=True, null=True)
     interval = models.FloatField()
     is_count = models.BooleanField()
     met = models.FloatField()

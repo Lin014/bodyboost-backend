@@ -18,11 +18,11 @@ addSportGroupRequestBody = openapi.Schema(
             description='運動組合名稱'
         ),
         'rest_time': openapi.Schema(
-            type=openapi.TYPE_STRING,
+            type=openapi.TYPE_NUMBER,
             description='運動組合間隔/休息時間'
         ),
         'user_id': openapi.Schema(
-            type=openapi.TYPE_NUMBER,
+            type=openapi.TYPE_INTEGER,
             description='user id'
         ),
         'items': openapi.Schema(
