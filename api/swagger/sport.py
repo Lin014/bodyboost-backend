@@ -3,14 +3,28 @@ from drf_yasg import openapi
 from ..serializers import SportSerializer
 from ..utils.response import *
 
-# responses: getAllSport
-getAllSportResponses = {
+# responses: getAllSportByUserIdSport
+getAllSportByUserIdResponses = {
     200: SportSerializer,
     404: str(NotFoundResponse('Sport'))
 }
 
-# responses: getSportById
-getSportByIdResponses = {
+# request_body: getSportByIdAndUserId
+getSportByIdAndUserIdRequestBody = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'sport_id': openapi.Schema(
+            type=openapi.TYPE_INTEGER,
+            description='運動項目 id'
+        ),
+        'user_id': openapi.Schema(
+            type=openapi.TYPE_INTEGER,
+            description='使用者 id'
+        ),
+    }
+)
+# responses: getSportByIdAndUserId
+getSportByIdAndUserIdResponses = {
     200: SportSerializer,
     404: str(NotFoundResponse('Sport'))
 }

@@ -5,47 +5,69 @@ from rest_framework.permissions import IsAuthenticated
 
 from drf_yasg.utils import swagger_auto_schema
 
-from ..models import Sport
-from ..serializers import SportSerializer
+from ..models import Sport, Animation, Setting
+from ..serializers import SportSerializer, AnimationSerializer
 from ..utils.response import *
 from ..swagger.sport import *
 
 @swagger_auto_schema(
     methods=['GET'],
     tags=["Sport"],
-    operation_summary='查詢全部運動項目',
-    operation_description="",
-    responses=getAllSportResponses
+    operation_summary='查詢指定使用者的全部運動項目',
+    operation_description="使用者如果是Premium會員就能享有更換動畫人物的資格，所以需輸入使用者id去識別他是哪個動畫人物",
+    responses=getAllSportByUserIdResponses
 )
 @api_view(['GET'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def getAllSport(request):
+def getAllSportByUserId(request, id):
     all_sport = Sport.objects.all()
     serializer = SportSerializer(all_sport, many=True)
+
+    sportlist = serializer.data
+    setting = Setting.objects.get(user_id=id)
+    for sport in sportlist:
+        try:
+            animation = Animation.objects.get(sport_id=sport['id'], name=setting.anim_char_name)
+            ainmationSerializer = AnimationSerializer(animation)
+            sport['animation'] = ainmationSerializer.data
+        except Animation.DoesNotExist:
+            sport['animation'] = {}
 
     if (serializer.data == []):
         return Response(NotFoundResponse('Sport'), status=404)
     else:
-        return Response(serializer.data)
+        return Response(sportlist)
     
 @swagger_auto_schema(
-    methods=['GET'],
+    methods=['POST'],
     tags=["Sport"],
-    operation_summary='查詢指定id的運動項目',
-    operation_description="輸入id，查詢運動項目",
-    responses=getSportByIdResponses
+    operation_summary='查詢指定sport id和user id的運動項目',
+    operation_description="使用者如果是Premium會員就能享有更換動畫人物的資格，所以需輸入使用者id去識別他是哪個動畫人物",
+    request_body=getSportByIdAndUserIdRequestBody,
+    responses=getSportByIdAndUserIdResponses
 )
-@api_view(['GET'])
+@api_view(['POST'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def getSportById(request, id):
+def getSportByIdAndUserId(request):
     try:
-        sport = Sport.objects.get(id=id)
+        sport = Sport.objects.get(id=request.data['sport_id'])
         serializer = SportSerializer(sport)
-        return Response(serializer.data, status=200)
+
+        setting = Setting.objects.get(user_id=request.data['user_id'])
+        resultSport = serializer.data
+        try:
+            animation = Animation.objects.get(sport_id=request.data['sport_id'], name=setting.anim_char_name)
+            animationSerializer = AnimationSerializer(animation)
+            resultSport['animation'] = animationSerializer.data
+        except:
+            resultSport['animation'] = {}
+
+        return Response(resultSport, status=200)
     except Sport.DoesNotExist:
         return Response(NotFoundResponse('Sport'), status=404)
+    
 
 @swagger_auto_schema(
     methods=['POST'],

@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from drf_yasg.utils import swagger_auto_schema
 
-from ..models import SportGroup, Users, Sport, SportGroupItem
+from ..models import SportGroup, Users, Sport, SportGroupItem, Setting
 from ..serializers import SportGroupSerializer, SportGroupItemSerializer
 from ..utils.response import *
 from ..swagger.sportgroup import *
@@ -14,7 +14,7 @@ from ..swagger.sportgroup import *
     methods=['GET'],
     tags=["SportGroup"],
     operation_summary='查詢某個user的全部運動組合',
-    operation_description="輸入user id，查詢運動組合",
+    operation_description="輸入user id，查詢運動組合，並列出所有運動項目的詳細資料",
     responses=getSportGroupByUserIdResponses
 )
 @api_view(['GET'])
@@ -28,7 +28,7 @@ def getSportGroupByUserId(request, id):
     
     if (len(sportGroups) == 0):
         return Response(NotFoundResponse('SportGroup'), status=404)
-
+    
     allSportGroup = SportGroupSerializer(sportGroups, many=True).data
     for sportGroup in allSportGroup:
         try:

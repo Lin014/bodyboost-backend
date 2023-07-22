@@ -187,10 +187,10 @@ class SportRecordItem(models.Model):
 
 class Animation(models.Model):
     name = models.CharField(max_length=15)
-    animation = models.FileField(upload_to='animation_video')
-    image = models.ImageField(upload_to='animation_img')
+    animation = models.FileField(upload_to='animation_video', blank=True, null=True)
+    image = models.ImageField(upload_to='animation_img', blank=True, null=True)
     sport_id = models.ForeignKey(Sport, on_delete=models.CASCADE)
-
+  
 class Accuracy(models.Model):
     accuracy = models.FloatField()
     label = models.CharField(max_length=15)
@@ -201,9 +201,20 @@ class Setting(models.Model):
         ('light', '日間'),
         ('dark', '夜間')
     )
+    alert_day_choices = (
+        ('Monday', '星期一'),
+        ('Tuesday', '星期二'),
+        ('Wednesday', '星期三'),
+        ('Thursday', '星期四'),
+        ('Friday', '星期五'),
+        ('Saturday', '星期六'),
+        ('Sunday', '星期日'),
+    )
 
     theme = models.CharField(max_length=10, choices=theme_choices)
     anim_char_name = models.CharField(max_length=15)
     is_alerted = models.BooleanField(default=False)
-    alert_time = models.DateTimeField()
+    alert_day = models.JSONField(blank=True, null=True)
+    alert_time = models.TimeField(blank=True, null=True)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 

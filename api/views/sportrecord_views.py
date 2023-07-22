@@ -11,6 +11,7 @@ from ..models import SportRecord, SportRecordItem, Sport, Users, SportGroup, Spo
 from ..serializers import SportRecordSerializer, SportRecordItemSerializer
 from ..utils.response import *
 from ..swagger.sportrecord import *
+from ..utils.validate import validateVideo
 
 @swagger_auto_schema(
     methods=['GET'],
@@ -211,3 +212,30 @@ def deleteSportRecord(request, id):
 
     delSportRecord.delete()
     return Response({"message": "SportRecord deleted successfully."}, status=200)
+
+@swagger_auto_schema(
+    methods=['PUT'],
+    tags=["SportRecordItem"],
+    operation_summary="上傳運動項目紀錄影片",
+    operation_description="輸入運動項目 id，並上傳影片",
+    request_body=uploadSportRecordItemVideoRequestBody,
+    responses=uploadSportRecordItemVideoResponses
+)
+@api_view(['PUT'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def uploadSportRecordItemVideo(request, id):
+    try:
+        sportRecordItem = SportRecordItem.objects.get(id=id)
+
+        video = request.data['video']
+
+        if (validateVideo(video)):
+            sportRecordItem.video = video
+            sportRecordItem.save()
+            serializer = SportRecordItemSerializer(sportRecordItem)
+            return Response(serializer.data, status=200)
+        else:
+            return Response(FormatErrorResponse('Video'), status=400)
+    except SportRecordItem.DoesNotExist:
+        return Response(NotFoundResponse('SportRecordItem'), status=404)

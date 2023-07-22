@@ -83,3 +83,22 @@ deleteSportRecordResponses = {
     200: '{"message": "SportRecord deleted successfully."}',
     404: str(NotFoundResponse('SportRecord'))
 }
+
+# request_body: uploadSportRecordItemVideo
+uploadSportRecordItemVideoRequestBody = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    required=['video'],
+    properties={
+        'video': openapi.Schema(
+            type=openapi.TYPE_ARRAY,
+            description='上傳影片',
+            items=openapi.Items(type=openapi.TYPE_STRING)
+        )
+    }
+)
+# responses: uploadSportRecordItemVideo
+uploadSportRecordItemVideoResponses = {
+    200: SportRecordItemSerializer,
+    400: str(FormatErrorResponse('Video')),
+    404: str(NotFoundResponse('SportRecordItem'))
+}
