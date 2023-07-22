@@ -11,7 +11,7 @@ def validateImage(image):
         return True
     
 def validateVideo(video):
-    allowedFormats = ['video/mp4', 'video/avi', 'video/mov']
+    allowedFormats = ['video/mp4', 'video/avi', 'video/mov', 'image/gif']
     fileMimeType = magic.from_buffer(video.read(), mime=True)
     if fileMimeType not in allowedFormats:
         return False

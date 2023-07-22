@@ -155,7 +155,7 @@ class SportRecord(models.Model):
     end_time = models.DateTimeField(blank=True, null=True)
     total_time = models.FloatField(default=0)
     total_consumed_kcal = models.FloatField(default=0)
-    cur_sport_no = models.IntegerField(default=1)
+    cur_sport_no = models.IntegerField(default=0)
     is_record_video = models.BooleanField(default=False)
     is_completed = models.BooleanField(default=False)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
@@ -185,7 +185,7 @@ class SportRecordItem(models.Model):
     sport_record_id = models.ForeignKey(SportRecord, on_delete=models.CASCADE)
     video = models.FileField(upload_to='record_video', blank=True, null=True)
 
-class AnimatedCharacter(models.Model):
+class Animation(models.Model):
     name = models.CharField(max_length=15)
     animation = models.FileField(upload_to='animation_video')
     image = models.ImageField(upload_to='animation_img')

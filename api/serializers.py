@@ -72,9 +72,9 @@ class SportRecordItemSerializer(serializers.ModelSerializer):
         model = SportRecordItem
         fields = '__all__'
 
-class AnimatedCharacterSerializer(serializers.ModelSerializer):
+class AnimationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = AnimatedCharacter
+        model = Animation
         fields = '__all__'
 
 class AccuracySerializer(serializers.ModelSerializer):

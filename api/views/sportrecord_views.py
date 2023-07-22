@@ -3,6 +3,8 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 
+from django.utils import timezone
+
 from drf_yasg.utils import swagger_auto_schema
 
 from ..models import SportRecord, SportRecordItem, Sport, Users, SportGroup, SportGroupItem
@@ -152,6 +154,44 @@ def addSportRecord(request):
         
     except SportGroup.DoesNotExist:
         return Response(NotFoundResponse('SportGroup'), status=404)
+
+@swagger_auto_schema(
+    methods=['PUT'],
+    tags=["SportRecord"],
+    operation_summary="更新運動紀錄項目",
+    operation_description="當運動項目做完時即要更新",
+    request_body=updateSportRecordItemRequestBody,
+    responses=updateSportRecordItemResponses
+)
+@api_view(['PUT'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def updateSportRecordItem(request, id):
+    try:
+        sportRecordItem = SportRecordItem.objects.get(id=id)
+    except:
+        return Response(NotFoundResponse('SportRecordItem'), status=404)
+    
+    sportRecordItem.time = request.data['time']
+    sportRecordItem.counts = request.data['counts']
+    sportRecordItem.consumed_kcal = request.data['consumed_kcal']
+    sportRecordItem.save()
+        
+    sportRecord = SportRecord.objects.get(id=sportRecordItem.sport_record_id.id)
+    sportRecord.cur_sport_no = sportRecordItem.no
+    sportRecord.total_consumed_kcal += sportRecordItem.consumed_kcal
+    sportRecord.total_time += sportRecordItem.time
+
+    sportRecordItemCount = SportRecordItem.objects.filter(sport_record_id=sportRecord.id).count()
+    if (sportRecordItem.no == sportRecordItemCount):
+        sportRecord.end_time = timezone.now()
+        sportRecord.is_completed = True
+    
+    sportRecord.save()
+    SportRecordItemSerializer = SportRecordItemSerializer(sportRecordItem)
+    return Response(SportRecordItemSerializer.data, status=200)
+
+
 
 @swagger_auto_schema(
     methods=['DELETE'],

@@ -51,7 +51,31 @@ addSportRecordRequestBody = openapi.Schema(
 addSportRecordResponses = {
     200: SportRecordSerializer,
     400: str(FormatErrorResponse('SportRecord')) + 'or' + str(FormatErrorResponse('SportRecordItem')),
-    404: str(NotFoundResponse('User'))
+    404: str(NotFoundResponse('User')) + 'or' + str(NotFoundResponse('Sport')) + 'or' + str(NotFoundResponse('SportGroupItem'))
+}
+
+# request_body: updateSportRecordItem
+updateSportRecordItemRequestBody = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'time': openapi.Schema(
+            type=openapi.TYPE_NUMBER,
+            description='運動做了多久'
+        ),
+        'counts': openapi.Schema(
+            type=openapi.TYPE_INTEGER,
+            description='運動做的次數'
+        ),
+        'consumed_kcal': openapi.Schema(
+            type=openapi.TYPE_NUMBER,
+            description='運動消耗的熱量'
+        ),
+    }
+)
+# responses: updateSportRecordItem
+updateSportRecordItemResponses = {
+    200: SportRecordItemSerializer,
+    404: str(NotFoundResponse('SportRecordItem'))
 }
 
 # responses: deleteSportRecord
