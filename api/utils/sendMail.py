@@ -37,13 +37,13 @@ def sendRegisterMail(email, user):
     sender = formataddr(('Body Boost', EMAIL_HOST_USER))
     send_mail(sendTitle, sendContent, sender, [emailVerifyCode.email], fail_silently=False)
 
-def sendForgetPasswordMail(email, user):
+def sendForgetMail(email, user):
     code = getAlphanumericRandomCode()
     emailVerifyCode = EmailVerifyCode.objects.create(
         code = code,
         email = email,
         send_type = 'forget',
-        user = user
+        user_id = user
     )
 
     sendTitle = "Body Boost 重設密碼驗證"

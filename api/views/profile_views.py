@@ -77,6 +77,7 @@ def addProfile(request):
         "birthday": request.data['birthday'],
         "height": request.data['height'],
         "weight": request.data['weight'],
+        "goal": request.data['goal'],
         "user": request.data['userID']
     }
     
@@ -111,6 +112,7 @@ def updateProfile(request, id):
     updateProfile.birthday = datetime.strptime(request.data['birthday'], "%Y-%m-%d").date()
     updateProfile.height = request.data['height']
     updateProfile.weight = request.data['weight']
+    updateProfile.goal = request.data['goal']
 
     print(updateProfile.birthday)
 

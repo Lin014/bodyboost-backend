@@ -12,7 +12,7 @@ from drf_yasg import openapi
 
 from ..models import Users, EmailVerifyCode
 from ..serializers import UsersSerializer
-from ..utils.sendMail import sendRegisterMail
+from ..utils.sendMail import sendRegisterMail, sendForgetMail
 from ..utils.response import *
 from .user_views import updateUserStatus
 from ..swagger.authentication import *
@@ -55,7 +55,7 @@ def sendForgetPasswordMail(request):
     except Users.DoesNotExist:
         return Response(NotFoundResponse('User'), status=404)
     
-    sendForgetPasswordMail(user.email, user)
+    sendForgetMail(user.email, user)
     serializer = UsersSerializer(user)
     return Response({ "message": "Send successfully.", "user": serializer.data })
 

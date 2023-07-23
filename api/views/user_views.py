@@ -145,26 +145,27 @@ def updateUserEmail(request, id):
     try:
         emailUser = Users.objects.get(email=request.data['email'], created_type='normal')
         if (updateUser.id == emailUser.id):
-            user = request.data
-            if (updateUser.created_type == 'normal'):
-                updateUser.email = user['email']
-                updateUser.status = 'unverified'
-
-                serializer = UsersSerializer(updateUser)
-                email_validator = EmailValidator()
-                try:
-                    email_validator(updateUser.email)
-                    updateUser.save()
-                    sendRegisterMail(updateUser.email, updateUser)
-                    return Response(serializer.data, status=200)
-                except:
-                    return Response(FormatErrorResponse('Email'), status=400)
-            else:
-                return Response({ "message": "User cannot be changed." }, status=400)
+            serializer = UsersSerializer(updateUser)
+            return Response(serializer.data, status=200)
         else:
             return Response({ "message": "Duplicate email."}, status=400)
     except Users.DoesNotExist:
-        return Response(NotFoundResponse('User'), status=404)
+        user = request.data
+        if (updateUser.created_type == 'normal'):
+            updateUser.email = user['email']
+            updateUser.status = 'unverified'
+
+            serializer = UsersSerializer(updateUser)
+            email_validator = EmailValidator()
+            try:
+                email_validator(updateUser.email)
+                updateUser.save()
+                sendRegisterMail(updateUser.email, updateUser)
+                return Response(serializer.data, status=200)
+            except:
+                return Response(FormatErrorResponse('Email'), status=400)
+        else:
+            return Response({ "message": "User cannot be changed." }, status=400)
    
 
 @swagger_auto_schema(

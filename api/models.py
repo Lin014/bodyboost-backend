@@ -28,6 +28,11 @@ class Users(models.Model):
 # done
 class Profile(models.Model):
     gender_choices = [(1, 1), (2, 2)]
+    goal_choices = [
+        ('health', '維持身體健康'),
+        ('weight', '減肥'),
+        ('muscle&fat', '增肌減脂')
+    ]
 
     name = models.CharField(max_length=50)
     gender = models.IntegerField(choices=gender_choices)
@@ -35,6 +40,7 @@ class Profile(models.Model):
     height = models.FloatField()
     weight = models.FloatField()
     image = models.ImageField(upload_to='profile_img', default='')
+    goal = models.CharField(max_length=30)
     user = models.OneToOneField(Users, on_delete=models.CASCADE)
 
 # done
@@ -143,6 +149,7 @@ class SportGroupItem(models.Model):
     sport_id = models.ForeignKey(Sport, on_delete=models.CASCADE)
     sport_group_id = models.ForeignKey(SportGroup, on_delete=models.CASCADE)
 
+# done
 class SportRecord(models.Model):
     type_choices = (
         ('single', '單一運動'),
@@ -161,6 +168,7 @@ class SportRecord(models.Model):
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
     sport_group_id = models.ForeignKey(SportGroup, on_delete=models.SET_NULL, blank=True, null=True)
 
+# done
 class SportRecordItem(models.Model):
     mode_choices = (
         ('timing', '計時'),
@@ -185,6 +193,7 @@ class SportRecordItem(models.Model):
     sport_record_id = models.ForeignKey(SportRecord, on_delete=models.CASCADE)
     video = models.FileField(upload_to='record_video', blank=True, null=True)
 
+# done
 class Animation(models.Model):
     name = models.CharField(max_length=15)
     animation = models.FileField(upload_to='animation_video', blank=True, null=True)
@@ -196,6 +205,7 @@ class Accuracy(models.Model):
     label = models.CharField(max_length=15)
     sport_record_item_id = models.ForeignKey(SportRecordItem, on_delete=models.CASCADE)
 
+# done
 class Setting(models.Model):
     theme_choices = (
         ('light', '日間'),
