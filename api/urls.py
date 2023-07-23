@@ -60,6 +60,7 @@ urlpatterns = [
    path('food/delete/<int:id>', food_views.deleteFood),
    # customfood
    path('customfood/', customfood_views.getAllCustomFood),
+   path('customfood/<int:id>', customfood_views.getCustomFoodByUserId),
    path('customfood/add/', customfood_views.addCustomFood),
    path('customfood/update/<int:id>', customfood_views.updateCustomFood),
    path('customfood/delete/<int:id>', customfood_views.deleteCustomFood),

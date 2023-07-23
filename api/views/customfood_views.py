@@ -29,6 +29,26 @@ def getAllCustomFood(request):
         return Response(NotFoundResponse('CustomFood'), status=404)
     else:
         return Response(serializer.data)
+    
+@swagger_auto_schema(
+    methods=['GET'],
+    tags=["CustomFood"],
+    operation_summary='查詢指定使用者自訂食物',
+    operation_description="",
+    responses=getAllCustomFoodResponses
+)
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def getCustomFoodByUserId(request, id):
+    all_food = CustomFood.objects.filter(user_id=id)
+    serializer = CustomFoodSerializer(all_food, many=True)
+
+    if (serializer.data == []):
+        return Response(NotFoundResponse('CustomFood'), status=404)
+    else:
+        return Response(serializer.data)
+
 
 
 @swagger_auto_schema(
@@ -91,8 +111,8 @@ def updateCustomFood(request, id):
     updateFood.fat = request.data['fat']
     updateFood.carb = request.data['carb']
     updateFood.sodium = request.data['sodium']
-    updateFood.food_type_id = request.data['food_type_id']
-    updateFood.store_id = request.data['store_id']
+    updateFood.food_type_id = foodType
+    updateFood.store_id = store
     updateFood.save()
 
     serializer = CustomFoodSerializer(updateFood)
