@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf.urls.static import static
 
-from .views import member_views, setting_views, animation_views, sportrecord_views, sportgroup_views, sportfrequency_views, sport_views, dailybonus_views, dietrecord_views, user_views, profile_views, authentication_views, store_views, foodtype_views, food_views, customfood_views
+from .views import notificationhistory_views, weighthistory_views, accuracy_views, member_views, setting_views, animation_views, sportrecord_views, sportgroup_views, sportfrequency_views, sport_views, dailybonus_views, dietrecord_views, user_views, profile_views, authentication_views, store_views, foodtype_views, food_views, customfood_views
 
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -41,8 +41,8 @@ urlpatterns = [
     path('profile/delete/<int:id>/', profile_views.deleteProfile),
     path('profile/uploadProfileImage/<int:id>', profile_views.uploadProfileImage),
     # dailybonus
-    path('dailybonus/<int:id>/', dailybonus_views.getDailyBonusById),
-    path('dailybonus/add/<int:id>/', dailybonus_views.addDailyBonusById),
+    path('dailybonus/<int:id>/', dailybonus_views.getDailyBonusByUserId),
+    path('dailybonus/add/<int:id>/', dailybonus_views.addDailyBonusByUserId),
     # store
     path('store/', store_views.getAllStore),
     path('store/add/', store_views.addStore),
@@ -90,6 +90,7 @@ urlpatterns = [
    path('sportrecord/add/', sportrecord_views.addSportRecord),
    path('sportrecord/update/<int:id>', sportrecord_views.updateSportRecordItem),
    path('sportrecord/delete/<int:id>', sportrecord_views.deleteSportRecord),
+   path('sportrecord/latest/<int:id>', sportrecord_views.getLatestSportRecordByUserId),
    # sportrecorditem
    path('sportrecorditem/uploadvideo/<int:id>', sportrecord_views.uploadSportRecordItemVideo),
    # animation
@@ -103,4 +104,14 @@ urlpatterns = [
    # member
    path('member/<int:id>', member_views.getMemberByUserId),
    path('member/update/<int:id>', member_views.updateMember),
+   # accuracy
+   path('accuracy/<int:id>', accuracy_views.getAccuracyBySportRecordItemId),
+   path('accuracy/add', accuracy_views.addAccuracy),
+   path('accuracy/delete/<int:id>', accuracy_views.deleteAccuracy),
+   # weighthistory
+   path('weighthistory/<int:id>', weighthistory_views.getWeightHistoryByUserId),
+   # notificationhistory
+   path('notificationhistory/<int:id>', notificationhistory_views.getNotificationHistoryByUserId),
+   path('notificationhistory/add', notificationhistory_views.addNotificationHistory),
+   path('notificationhistory/delete/<int:id>', notificationhistory_views.deleteNotificationHistory),
 ] + static(MEDIA_URL, document_root=MEDIA_ROOT)

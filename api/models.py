@@ -19,7 +19,8 @@ class Users(models.Model):
     created_type = models.CharField(max_length=20, choices=created_type_choices)
     status = models.CharField(max_length=20, choices=status_choices)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
+#done
 class Member(models.Model):
     member_type_choices = [ 
         ('normal', 'Normal'),
@@ -237,5 +238,20 @@ class Setting(models.Model):
     is_alerted = models.BooleanField(default=False)
     alert_day = models.JSONField(blank=True, null=True)
     alert_time = models.TimeField(blank=True, null=True)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+
+# done
+class WeigthtHistory(models.Model):
+
+    weight = models.FloatField()
+    date = models.DateTimeField(auto_now_add=True)
+    user_id=models.ForeignKey(Users, on_delete=models.CASCADE)
+
+class NotificationHistory(models.Model):
+
+    content = models.TextField()
+    create_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+    label = models.TextField(blank=True, null=True)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 

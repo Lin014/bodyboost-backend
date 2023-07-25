@@ -17,19 +17,21 @@ from ..swagger.dailybonus import *
     methods=['GET'],
     tags=["DailyBonus"],
     operation_summary='查詢指定使用者簽到記錄',
-    operation_description="輸入id，查詢使用者簽到記錄",
+    operation_description="輸入user id，查詢使用者簽到記錄",
     responses=getDailyBonusByIdResponses
 )
 @api_view(['GET'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def getDailyBonusById(request, id):
-    try:
-        all_dailyBonus = DailyBonus.objects.filter(user_id=id)
+def getDailyBonusByUserId(request, id):
+    all_dailyBonus = DailyBonus.objects.filter(user_id=id)
+
+    if (len(all_dailyBonus) == 0):
+        return Response(NotFoundResponse('DailyBonus'), status=404)
+    else:
         serializer = DailyBonusSerializer(all_dailyBonus, many=True)
         return Response(serializer.data, status=200)
-    except DailyBonus.DoesNotExist:
-        return Response(NotFoundResponse('DailyBonus'), status=404)
+    
 
 @swagger_auto_schema(
     methods=['POST'],
@@ -41,7 +43,7 @@ def getDailyBonusById(request, id):
 @api_view(['POST'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def addDailyBonusById(request, id):
+def addDailyBonusByUserId(request, id):
     try:
         user = Users.objects.get(id=id)
     except Users.DoesNotExist:

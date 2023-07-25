@@ -92,4 +92,12 @@ class MemberSerializer(serializers.ModelSerializer):
         model = Member
         fields = '__all__'
 
-    
+class WeightHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WeigthtHistory
+        fields = '__all__'
+
+class NotificationHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NotificationHistory
+        fields = '__all__'

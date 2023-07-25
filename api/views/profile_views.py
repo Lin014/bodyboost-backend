@@ -14,6 +14,7 @@ from .user_views import updateUserStatus
 from ..utils.validate import validateImage
 from ..utils.osFileManage import deleteFile
 from ..swagger.profile import *
+from ..views.weighthistory_views import addWeightHistory, getLatestWeightHistory
 
 @swagger_auto_schema(
     methods=['GET'],
@@ -86,6 +87,8 @@ def addProfile(request):
     if (serializer.is_valid()):
         serializer.save()
         updateUserStatus(request.data['userID'], 'success')
+        # add weight history
+        addWeightHistory(request.data['userID'], request.data['weight'])
         return Response(serializer.data)
     else:
         return Response(FormatErrorResponse('Profile'), status=400)
@@ -94,7 +97,7 @@ def addProfile(request):
     methods=['PUT'],
     tags=["Profile"],
     operation_summary="更新使用者個人資料",
-    operation_description="可更新欄位只有以下輸入之欄位，需完整傳入以下欄位之json，就算不需要修改的欄位也要",
+    operation_description="輸入user id, 可更新欄位只有以下輸入之欄位，需完整傳入以下欄位之json，就算不需要修改的欄位也要",
     request_body=updateProfileRequestBody,
     responses=updateProfileResponses
 )
@@ -103,7 +106,7 @@ def addProfile(request):
 @permission_classes([IsAuthenticated])
 def updateProfile(request, id):
     try:
-        updateProfile = Profile.objects.get(id=id)
+        updateProfile = Profile.objects.get(user=id)
     except Profile.DoesNotExist:
         return Response(NotFoundResponse('Profile'), status=404)
     
@@ -119,6 +122,11 @@ def updateProfile(request, id):
     serializer = ProfileSerializer(updateProfile)
     if (serializer.is_valid):
         updateProfile.save()
+
+        # check weight and add weight
+        if (request.data['weight'] != getLatestWeightHistory(serializer.data['user']).weight):
+            addWeightHistory(serializer.data['user'], request.data['weight'])
+
         return Response(serializer.data, status=200)
     else:
         return Response(FormatErrorResponse('Profile'), status=400)

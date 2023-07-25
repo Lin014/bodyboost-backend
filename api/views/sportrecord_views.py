@@ -239,3 +239,33 @@ def uploadSportRecordItemVideo(request, id):
             return Response(FormatErrorResponse('Video'), status=400)
     except SportRecordItem.DoesNotExist:
         return Response(NotFoundResponse('SportRecordItem'), status=404)
+
+@swagger_auto_schema(
+    methods=['GET'],
+    tags=["SportRecord"],
+    operation_summary='查詢某個user的近期五筆運動紀錄',
+    operation_description="輸入user id，查詢近期運動紀錄",
+    responses=getSportRecordByUserIdResponses
+)
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def getLatestSportRecordByUserId(request, id):
+    try:
+        sportRecords = SportRecord.objects.filter(user_id=id).order_by('-start_time')[:5]
+    except SportRecord.DoesNotExist:
+        return Response(NotFoundResponse('SportRecord'), status=404)
+    
+    if (len(sportRecords) == 0):
+        return Response(NotFoundResponse('SportRecord'), status=404)
+    
+    allSportRecord = SportRecordSerializer(sportRecords, many=True).data
+    for sportRecord in allSportRecord:
+        try:
+            sportRecordItems = SportRecordItem.objects.filter(sport_record_id=sportRecord['id'])
+            itemsSerializer = SportRecordItemSerializer(sportRecordItems, many=True)
+            sportRecord['items'] = itemsSerializer.data
+        except SportRecordItem.DoesNotExist:
+            pass
+
+    return Response(allSportRecord, status=200)
