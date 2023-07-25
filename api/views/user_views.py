@@ -7,14 +7,14 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
 
-from ..models import Users, Setting
+from ..models import Users
 from ..serializers import UsersSerializer
 from ..utils.sendMail import sendRegisterMail
 from ..utils.response import *
 from ..swagger.users import *
 from ..views.setting_views import addSetting
+from ..views.member_views import addMember
 
 @swagger_auto_schema(
     methods=['GET'],
@@ -94,6 +94,7 @@ def addUser(request):
                 sendUser = Users.objects.get(id=serializer.data['id'])
                 sendRegisterMail(sendUser.email, sendUser)
                 addSetting(serializer.data['id'])
+                addMember(serializer.data['id'])
                 return Response(serializer.data)
             else:
                 return Response(FormatErrorResponse('User'), status=400)
@@ -237,6 +238,7 @@ def login_google(request):
         if (serializer.is_valid()):
             serializer.save()
             addSetting(serializer.data['id'])
+            addMember(serializer.data['id'])
             return Response(serializer.data)
         else:
             return Response(FormatErrorResponse('User'), status=400)

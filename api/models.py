@@ -12,10 +12,6 @@ class Users(models.Model):
         ('normal', 'Normal'),
         ('google', 'Google') 
     ]
-    member_type_choices = [ 
-        ('normal', 'Normal'),
-        ('premium', 'Premium') 
-    ]
 
     account = models.CharField(max_length=30)
     password = models.CharField(max_length=200, blank=True, null=True)
@@ -23,7 +19,22 @@ class Users(models.Model):
     created_type = models.CharField(max_length=20, choices=created_type_choices)
     status = models.CharField(max_length=20, choices=status_choices)
     created_at = models.DateTimeField(auto_now_add=True)
+    
+class Member(models.Model):
+    member_type_choices = [ 
+        ('normal', 'Normal'),
+        ('premium', 'Premium') 
+    ]
+    payment_type_choices = [
+        ('month', '月繳'),
+        ('year', '年繳')
+    ]
+
     member_type = models.CharField(max_length=10, default='normal', choices=member_type_choices)
+    phone = models.CharField(max_length=10, blank=True, null=True)
+    is_trial = models.BooleanField(default=False)
+    payment_type = models.CharField(max_length=15, blank=True, null=True)
+    user_id = models.OneToOneField(Users, on_delete=models.CASCADE)
 
 # done
 class Profile(models.Model):

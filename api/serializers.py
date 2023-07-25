@@ -87,5 +87,9 @@ class SettingSerializer(serializers.ModelSerializer):
         model = Setting
         fields = '__all__'
 
+class MemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Member
+        fields = '__all__'
 
     
