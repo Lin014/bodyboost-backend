@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf.urls.static import static
 
-from .views import notificationhistory_views, weighthistory_views, accuracy_views, member_views, setting_views, animation_views, sportrecord_views, sportgroup_views, sportfrequency_views, sport_views, dailybonus_views, dietrecord_views, user_views, profile_views, authentication_views, store_views, foodtype_views, food_views, customfood_views
+from .views import waterhistory_views, bodyfathistory_views, notificationhistory_views, weighthistory_views, accuracy_views, member_views, setting_views, animation_views, sportrecord_views, sportgroup_views, sportfrequency_views, sport_views, dailybonus_views, dietrecord_views, user_views, profile_views, authentication_views, store_views, foodtype_views, food_views, customfood_views
 
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -110,8 +110,14 @@ urlpatterns = [
    path('accuracy/delete/<int:id>', accuracy_views.deleteAccuracy),
    # weighthistory
    path('weighthistory/<int:id>', weighthistory_views.getWeightHistoryByUserId),
+   # bodyfathistory
+   path('bodyfathistory/<int:id>', bodyfathistory_views.geBodyFatHistoryByUserId),
    # notificationhistory
    path('notificationhistory/<int:id>', notificationhistory_views.getNotificationHistoryByUserId),
    path('notificationhistory/add', notificationhistory_views.addNotificationHistory),
    path('notificationhistory/delete/<int:id>', notificationhistory_views.deleteNotificationHistory),
+   # waterhistory
+   path('waterhistory/<int:id>', waterhistory_views.geWaterHistoryByUserId),
+   path('waterhistory/add', waterhistory_views.addWaterHistory),
+   path('waterhistory/delete/<int:id>', waterhistory_views.deleteWaterHistory),
 ] + static(MEDIA_URL, document_root=MEDIA_ROOT)

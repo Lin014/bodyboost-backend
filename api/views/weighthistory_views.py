@@ -21,7 +21,7 @@ from ..swagger.weighthistory import *
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def getWeightHistoryByUserId(request, id):
-    weightHistoryList = WeigthtHistory.objects.filter(user_id=id)
+    weightHistoryList = WeigthtHistory.objects.filter(user_id=id).order_by('date')
 
     if (len(weightHistoryList) == 0):
         return Response(NotFoundResponse('WeightHistory'), status=404)

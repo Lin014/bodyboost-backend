@@ -42,8 +42,9 @@ class Profile(models.Model):
     gender_choices = [(1, 1), (2, 2)]
     goal_choices = [
         ('health', '維持身體健康'),
-        ('weight', '減肥'),
-        ('muscle&fat', '增肌減脂')
+        ('weight', '減重'),
+        ('fat', '減脂'),
+        ('muscle', '增肌'),
     ]
 
     name = models.CharField(max_length=50)
@@ -52,7 +53,8 @@ class Profile(models.Model):
     height = models.FloatField()
     weight = models.FloatField()
     image = models.ImageField(upload_to='profile_img', default='')
-    goal = models.CharField(max_length=30)
+    goal = models.CharField(default='health', max_length=30, choices=goal_choices)
+    body_fat = models.FloatField(blank=True, null=True)
     user = models.OneToOneField(Users, on_delete=models.CASCADE)
 
 # done
@@ -247,6 +249,7 @@ class WeigthtHistory(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     user_id=models.ForeignKey(Users, on_delete=models.CASCADE)
 
+# done
 class NotificationHistory(models.Model):
 
     content = models.TextField()
@@ -254,4 +257,18 @@ class NotificationHistory(models.Model):
     is_read = models.BooleanField(default=False)
     label = models.TextField(blank=True, null=True)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+
+# done
+class BodyFatHistory(models.Model):
+
+    body_fat = models.FloatField()
+    date = models.DateTimeField(auto_now_add=True)
+    user_id=models.ForeignKey(Users, on_delete=models.CASCADE)
+
+# done
+class WaterHistory(models.Model):
+
+    water = models.FloatField()
+    date = models.DateTimeField()
+    user_id=models.ForeignKey(Users, on_delete=models.CASCADE)
 

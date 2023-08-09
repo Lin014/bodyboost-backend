@@ -39,10 +39,6 @@ addProfileRequestBody = openapi.Schema(
             type=openapi.TYPE_NUMBER,
             description='體重, 單位公斤, 浮點數'
         ),
-        'goal': openapi.Schema(
-            type=openapi.TYPE_STRING,
-            description='使用目標，health(維持身體健康), weight(減肥), muscle&fat(增肌減脂)'
-        ),
         'userID': openapi.Schema(
             type=openapi.TYPE_INTEGER,
             description='相對應的user id, foreignkey'
@@ -83,6 +79,10 @@ updateProfileRequestBody = openapi.Schema(
         'goal': openapi.Schema(
             type=openapi.TYPE_STRING,
             description='使用目標，health(維持身體健康), weight(減肥), muscle&fat(增肌減脂)'
+        ),
+        'body_fat': openapi.Schema(
+            type=openapi.TYPE_NUMBER,
+            description='體脂率, 單位%, 浮點數'
         ),
     }
 )

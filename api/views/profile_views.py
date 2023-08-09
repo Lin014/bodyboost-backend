@@ -15,6 +15,7 @@ from ..utils.validate import validateImage
 from ..utils.osFileManage import deleteFile
 from ..swagger.profile import *
 from ..views.weighthistory_views import addWeightHistory, getLatestWeightHistory
+from ..views.bodyfathistory_views import addBodyFatHistory, getLatestBodyFatHistory
 
 @swagger_auto_schema(
     methods=['GET'],
@@ -71,16 +72,10 @@ def addProfile(request):
         rUser = Users.objects.get(id=request.data['userID'])
     except Users.DoesNotExist:
         return Response(NotFoundResponse('userID'), status=404)
-    
-    newProfile = {
-        "name": request.data['name'],
-        "gender": request.data['gender'],
-        "birthday": request.data['birthday'],
-        "height": request.data['height'],
-        "weight": request.data['weight'],
-        "goal": request.data['goal'],
-        "user": request.data['userID']
-    }
+
+    newProfile = request.data.copy()
+    newProfile["user"] = request.data['userID']
+    del newProfile["userID"]
     
     serializer = ProfileSerializer(data=newProfile)
     
@@ -89,6 +84,8 @@ def addProfile(request):
         updateUserStatus(request.data['userID'], 'success')
         # add weight history
         addWeightHistory(request.data['userID'], request.data['weight'])
+
+        print("bodyFat " + str(serializer.data))
         return Response(serializer.data)
     else:
         return Response(FormatErrorResponse('Profile'), status=400)
@@ -116,8 +113,7 @@ def updateProfile(request, id):
     updateProfile.height = request.data['height']
     updateProfile.weight = request.data['weight']
     updateProfile.goal = request.data['goal']
-
-    print(updateProfile.birthday)
+    updateProfile.body_fat = request.data['body_fat']
 
     serializer = ProfileSerializer(updateProfile)
     if (serializer.is_valid):
@@ -126,6 +122,13 @@ def updateProfile(request, id):
         # check weight and add weight
         if (request.data['weight'] != getLatestWeightHistory(serializer.data['user']).weight):
             addWeightHistory(serializer.data['user'], request.data['weight'])
+        
+        if (request.data['body_fat'] != None):
+            if (getLatestBodyFatHistory(serializer.data['user']) != -1):
+                if (request.data['body_fat'] != getLatestBodyFatHistory(serializer.data['user']).body_fat):
+                    addBodyFatHistory(serializer.data['user'], request.data['body_fat'])
+            else:
+                addBodyFatHistory(serializer.data['user'], request.data['body_fat'])
 
         return Response(serializer.data, status=200)
     else:

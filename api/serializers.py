@@ -101,3 +101,13 @@ class NotificationHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = NotificationHistory
         fields = '__all__'
+
+class BodyFatHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BodyFatHistory
+        fields = '__all__'
+
+class WaterHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WaterHistory
+        fields = '__all__'
