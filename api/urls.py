@@ -22,6 +22,7 @@ urlpatterns = [
     # insert data
     path('data/store', data_views.insertStoreData),
     path('data/foodtype', data_views.insertFoodTypeData),
+    path('data/food', data_views.insertFoodData),
     # users
     path('users/', user_views.getAllUser),
     path('users/<int:id>/', user_views.getUserById),
