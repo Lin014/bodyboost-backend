@@ -111,3 +111,8 @@ class WaterHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = WaterHistory
         fields = '__all__'
+
+class AchievementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Achievement
+        fields = '__all__'

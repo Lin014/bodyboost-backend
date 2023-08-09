@@ -272,3 +272,7 @@ class WaterHistory(models.Model):
     date = models.DateTimeField()
     user_id=models.ForeignKey(Users, on_delete=models.CASCADE)
 
+class Achievement(models.Model):
+    name = models.TextField()
+    description = models.TextField()
+    label = models.CharField(max_length=20)

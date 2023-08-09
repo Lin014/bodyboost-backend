@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf.urls.static import static
 
-from .views import waterhistory_views, bodyfathistory_views, notificationhistory_views, weighthistory_views, accuracy_views, member_views, setting_views, animation_views, sportrecord_views, sportgroup_views, sportfrequency_views, sport_views, dailybonus_views, dietrecord_views, user_views, profile_views, authentication_views, store_views, foodtype_views, food_views, customfood_views
+from .views import data_views, waterhistory_views, bodyfathistory_views, notificationhistory_views, weighthistory_views, accuracy_views, member_views, setting_views, animation_views, sportrecord_views, sportgroup_views, sportfrequency_views, sport_views, dailybonus_views, dietrecord_views, user_views, profile_views, authentication_views, store_views, foodtype_views, food_views, customfood_views
 
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -19,6 +19,9 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    # insert data
+    path('data/store', data_views.insertStoreData),
+    path('data/foodtype', data_views.insertFoodTypeData),
     # users
     path('users/', user_views.getAllUser),
     path('users/<int:id>/', user_views.getUserById),
