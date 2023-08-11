@@ -40,8 +40,8 @@ def getAllProfile(request):
 @swagger_auto_schema(
     methods=['GET'],
     tags=["Profile"],
-    operation_summary='查詢指定id的使用者個人資料',
-    operation_description="輸入id，查詢使用者個人資料",
+    operation_summary='查詢指定使用者id的個人資料',
+    operation_description="輸入使用者id，查詢使用者個人資料",
     responses=getProfileByIdResponses
 )
 @api_view(['GET'])
@@ -49,7 +49,7 @@ def getAllProfile(request):
 @permission_classes([IsAuthenticated])
 def getProfileById(request, id):
     try:
-        p = Profile.objects.get(id=id)
+        p = Profile.objects.get(user=id)
         serializer = ProfileSerializer(p)
         return Response(serializer.data, status=200)
     except Profile.DoesNotExist:
@@ -112,6 +112,7 @@ def updateProfile(request, id):
     updateProfile.birthday = datetime.strptime(request.data['birthday'], "%Y-%m-%d").date()
     updateProfile.height = request.data['height']
     updateProfile.weight = request.data['weight']
+    updateProfile.weight_goal = request.data['weight_goal']
     updateProfile.goal = request.data['goal']
     updateProfile.body_fat = request.data['body_fat']
 
@@ -157,7 +158,7 @@ def deleteProfile(request, id):
     methods=['PUT'],
     tags=["Profile"],
     operation_summary="上傳使用者大頭照",
-    operation_description="",
+    operation_description="輸入使用者id，上傳大頭貼",
     request_body=uploadProfileImageRequestBody,
     responses=uploadProfileImageResponses
 )
@@ -166,7 +167,7 @@ def deleteProfile(request, id):
 @permission_classes([IsAuthenticated])
 def uploadProfileImage(request, id):
     try:
-        profile = Profile.objects.get(id=id)
+        profile = Profile.objects.get(user=id)
     except Profile.DoesNotExist:
         return Response(NotFoundResponse('Profile'), status=404)
     

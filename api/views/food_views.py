@@ -1,5 +1,4 @@
 from rest_framework.response import Response
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -13,13 +12,8 @@ from ..models import Food, FoodType, Store
 from ..serializers import FoodSerializer
 from ..utils.response import *
 from ..swagger.food import *
-
-class FoodPagination(PageNumberPagination):
-    page_size = 10
-    page_size_query_param = 'page_size'
-    max_page_size = 100
-
-paginator = FoodPagination()
+from .pagination_views import paginator
+from ..swagger.page import pageManualParameters
 
 @swagger_auto_schema(
     methods=['GET'],

@@ -9,12 +9,15 @@ from ..models import SportFrequency, Sport
 from ..serializers import SportFrequencySerializer
 from ..utils.response import *
 from ..swagger.sportfrequency import *
+from .pagination_views import paginator
+from ..swagger.page import pageManualParameters
 
 @swagger_auto_schema(
     methods=['GET'],
     tags=["SportFrequency"],
     operation_summary='查詢全部運動頻率，呈運動頻率遞減排序',
     operation_description="",
+    manual_parameters=pageManualParameters,
     responses=getAllSportFrequencyResponses
 )
 @api_view(['GET'])
@@ -22,7 +25,8 @@ from ..swagger.sportfrequency import *
 @permission_classes([IsAuthenticated])
 def getAllSportFrequency(request):
     all_sport_frequency = SportFrequency.objects.all().order_by('-frequency')
-    serializer = SportFrequencySerializer(all_sport_frequency, many=True)
+    result_page = paginator.paginate_queryset(all_sport_frequency, request)
+    serializer = SportFrequencySerializer(result_page, many=True)
 
     if (serializer.data == []):
         return Response(NotFoundResponse('SportFrequency'), status=404)

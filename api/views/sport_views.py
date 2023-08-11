@@ -9,12 +9,15 @@ from ..models import Sport, Animation, Setting
 from ..serializers import SportSerializer, AnimationSerializer
 from ..utils.response import *
 from ..swagger.sport import *
+from .pagination_views import paginator
+from ..swagger.page import pageManualParameters
 
 @swagger_auto_schema(
     methods=['GET'],
     tags=["Sport"],
     operation_summary='查詢指定使用者的全部運動項目',
     operation_description="使用者如果是Premium會員就能享有更換動畫人物的資格，所以需輸入使用者id去識別他是哪個動畫人物",
+    manual_parameters=pageManualParameters,
     responses=getAllSportByUserIdResponses
 )
 @api_view(['GET'])
@@ -23,6 +26,8 @@ from ..swagger.sport import *
 def getAllSportByUserId(request, id):
     all_sport = Sport.objects.all()
     serializer = SportSerializer(all_sport, many=True)
+    if (serializer.data == []):
+        return Response(NotFoundResponse('Sport'), status=404)
 
     sportlist = serializer.data
     setting = Setting.objects.get(user_id=id)
@@ -34,10 +39,8 @@ def getAllSportByUserId(request, id):
         except Animation.DoesNotExist:
             sport['animation'] = {}
 
-    if (serializer.data == []):
-        return Response(NotFoundResponse('Sport'), status=404)
-    else:
-        return Response(sportlist)
+    result_page = paginator.paginate_queryset(sportlist, request)
+    return Response(result_page, status=200)
     
 @swagger_auto_schema(
     methods=['POST'],
@@ -113,6 +116,7 @@ def updateSport(request, id):
     updateSport.interval = request.data['interval']
     updateSport.is_count = request.data['is_count']
     updateSport.met = request.data['met']
+    updateSport.type = request.data['type']
     updateSport.save()
 
     serializer = SportSerializer(updateSport)

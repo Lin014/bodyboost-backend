@@ -76,6 +76,10 @@ updateProfileRequestBody = openapi.Schema(
             type=openapi.TYPE_NUMBER,
             description='體重, 單位公斤, 浮點數'
         ),
+        'weight_goal': openapi.Schema(
+            type=openapi.TYPE_NUMBER,
+            description='目標體重, 單位公斤, 浮點數'
+        ),
         'goal': openapi.Schema(
             type=openapi.TYPE_STRING,
             description='使用目標，health(維持身體健康), weight(減肥), muscle&fat(增肌減脂)'

@@ -9,12 +9,15 @@ from ..models import SportGroup, Users, Sport, SportGroupItem, Setting
 from ..serializers import SportGroupSerializer, SportGroupItemSerializer
 from ..utils.response import *
 from ..swagger.sportgroup import *
+from .pagination_views import paginator
+from ..swagger.page import pageManualParameters
 
 @swagger_auto_schema(
     methods=['GET'],
     tags=["SportGroup"],
     operation_summary='查詢某個user的全部運動組合',
     operation_description="輸入user id，查詢運動組合，並列出所有運動項目的詳細資料",
+    manual_parameters=pageManualParameters,
     responses=getSportGroupByUserIdResponses
 )
 @api_view(['GET'])
@@ -38,7 +41,8 @@ def getSportGroupByUserId(request, id):
         except SportGroupItem.DoesNotExist:
             pass
 
-    return Response(allSportGroup, status=200)
+    result_page = paginator.paginate_queryset(allSportGroup, request)
+    return Response(result_page, status=200)
 
 @swagger_auto_schema(
     methods=['POST'],

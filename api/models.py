@@ -52,7 +52,6 @@ class Profile(models.Model):
     birthday = models.DateField()
     height = models.FloatField()
     weight = models.FloatField()
-    # 目標體重
     weight_goal = models.FloatField(blank=True, null=True)
     image = models.ImageField(upload_to='profile_img', default='')
     goal = models.CharField(default='health', max_length=30, choices=goal_choices)
@@ -85,6 +84,7 @@ class FoodType(models.Model):
     type = models.TextField(unique=True)
 
 # done
+# page
 class Food(models.Model):
     name = models.TextField()
     calorie = models.FloatField()
@@ -142,7 +142,6 @@ class Sport(models.Model):
     interval = models.FloatField()
     is_count = models.BooleanField()
     met = models.FloatField()
-    # 有氧無氧運動
     type = models.CharField(max_length=10)
 
 # done

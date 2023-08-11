@@ -12,12 +12,15 @@ from ..serializers import SportRecordSerializer, SportRecordItemSerializer
 from ..utils.response import *
 from ..swagger.sportrecord import *
 from ..utils.validate import validateVideo
+from .pagination_views import paginator
+from ..swagger.page import pageManualParameters
 
 @swagger_auto_schema(
     methods=['GET'],
     tags=["SportRecord"],
     operation_summary='查詢某個user的全部運動紀錄',
     operation_description="輸入user id，查詢運動紀錄",
+    manual_parameters=pageManualParameters,
     responses=getSportRecordByUserIdResponses
 )
 @api_view(['GET'])
@@ -40,8 +43,9 @@ def getSportRecordByUserId(request, id):
             sportRecord['items'] = itemsSerializer.data
         except SportRecordItem.DoesNotExist:
             pass
-
-    return Response(allSportRecord, status=200)
+    
+    result_page = paginator.paginate_queryset(allSportRecord, request)
+    return Response(result_page, status=200)
 
 @swagger_auto_schema(
     methods=['POST'],

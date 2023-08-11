@@ -10,12 +10,15 @@ from ..models import CustomFood, FoodType, Store, Users
 from ..serializers import CustomFoodSerializer
 from ..utils.response import *
 from ..swagger.customfood import *
+from .pagination_views import paginator
+from ..swagger.page import pageManualParameters
 
 @swagger_auto_schema(
     methods=['GET'],
     tags=["CustomFood"],
     operation_summary='查詢全部自訂食物',
     operation_description="",
+    manual_parameters=pageManualParameters,
     responses=getAllCustomFoodResponses
 )
 @api_view(['GET'])
@@ -23,7 +26,8 @@ from ..swagger.customfood import *
 @permission_classes([IsAuthenticated])
 def getAllCustomFood(request):
     all_food = CustomFood.objects.all()
-    serializer = CustomFoodSerializer(all_food, many=True)
+    result_page = paginator.paginate_queryset(all_food, request)
+    serializer = CustomFoodSerializer(result_page, many=True)
 
     if (serializer.data == []):
         return Response(NotFoundResponse('CustomFood'), status=404)
@@ -35,6 +39,7 @@ def getAllCustomFood(request):
     tags=["CustomFood"],
     operation_summary='查詢指定使用者自訂食物',
     operation_description="",
+    manual_parameters=pageManualParameters,
     responses=getAllCustomFoodResponses
 )
 @api_view(['GET'])
@@ -42,13 +47,13 @@ def getAllCustomFood(request):
 @permission_classes([IsAuthenticated])
 def getCustomFoodByUserId(request, id):
     all_food = CustomFood.objects.filter(user_id=id)
-    serializer = CustomFoodSerializer(all_food, many=True)
+    result_page = paginator.paginate_queryset(all_food, request)
+    serializer = CustomFoodSerializer(result_page, many=True)
 
     if (serializer.data == []):
         return Response(NotFoundResponse('CustomFood'), status=404)
     else:
         return Response(serializer.data)
-
 
 
 @swagger_auto_schema(
