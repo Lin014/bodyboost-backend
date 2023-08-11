@@ -59,6 +59,9 @@ urlpatterns = [
     path('foodtype/delete/<int:id>', foodtype_views.deleteFoodType),
    # food
    path('food/', food_views.getAllFood),
+   path('food/foodtype/<int:id>', food_views.getFoodByFoodTypeId),
+   path('food/store/<int:id>', food_views.getFoodByStoreId),
+   path('food/search', food_views.getFoodByName, name='get-food-by-name'),
    path('food/add/', food_views.addFood),
    path('food/update/<int:id>', food_views.updateFood),
    path('food/delete/<int:id>', food_views.deleteFood),

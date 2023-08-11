@@ -3,9 +3,42 @@ from drf_yasg import openapi
 from ..serializers import FoodSerializer
 from ..utils.response import *
 
+# manual_parameters: page
+pageManualParameters = [
+    openapi.Parameter(
+        name='page',
+        in_=openapi.IN_QUERY,
+        type=openapi.TYPE_INTEGER,
+        description='分頁號碼',
+    ),
+    openapi.Parameter(
+        name='page_size',
+        in_=openapi.IN_QUERY,
+        type=openapi.TYPE_INTEGER,
+        description='每頁顯示的數據項目數量',
+    ),
+]
+nameManualParameters = [
+    openapi.Parameter(
+        name='name',
+        in_=openapi.IN_QUERY,
+        type=openapi.TYPE_STRING,
+        description='查詢關鍵字',
+        required=True
+    ),
+    *pageManualParameters,
+]
+
 # responses: getAllFood
 getAllFoodResponses = {
     200: FoodSerializer,
+    404: str(NotFoundResponse('Food'))
+}
+
+# responses: getFoodByName
+getFoodByNameResponses = {
+    200: FoodSerializer,
+    400: str({'message': 'Please provide a name parameter'}),
     404: str(NotFoundResponse('Food'))
 }
 

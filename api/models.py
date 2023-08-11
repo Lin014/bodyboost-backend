@@ -52,6 +52,8 @@ class Profile(models.Model):
     birthday = models.DateField()
     height = models.FloatField()
     weight = models.FloatField()
+    # 目標體重
+    weight_goal = models.FloatField(blank=True, null=True)
     image = models.ImageField(upload_to='profile_img', default='')
     goal = models.CharField(default='health', max_length=30, choices=goal_choices)
     body_fat = models.FloatField(blank=True, null=True)
@@ -76,11 +78,11 @@ class DailyBonus(models.Model):
 
 # done
 class Store(models.Model):
-    name = models.TextField()
+    name = models.TextField(unique=True)
 
 # done
 class FoodType(models.Model):
-    type = models.TextField()
+    type = models.TextField(unique=True)
 
 # done
 class Food(models.Model):
@@ -130,12 +132,18 @@ class DietRecord(models.Model):
 
 # done
 class Sport(models.Model):
-    name = models.TextField()
+    type_choices = (
+        ('aerobics', '有氧'),
+        ('anaerobic', '無氧')
+    )
+    name = models.TextField(unique=True)
     description = models.TextField(blank=True, null=True)
     default_time = models.FloatField()
     interval = models.FloatField()
     is_count = models.BooleanField()
     met = models.FloatField()
+    # 有氧無氧運動
+    type = models.CharField(max_length=10)
 
 # done
 class SportFrequency(models.Model):
@@ -273,6 +281,27 @@ class WaterHistory(models.Model):
     user_id=models.ForeignKey(Users, on_delete=models.CASCADE)
 
 class Achievement(models.Model):
+    label_choices = (
+        ('common', '共同'),
+        ('sport', '運動'),
+        ('diet', '飲食')
+    )
+
     name = models.TextField()
     description = models.TextField()
-    label = models.CharField(max_length=20)
+    label = models.CharField(max_length=20, choices=label_choices)
+    is_achieve = models.BooleanField(default=False)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+
+# 假如目標更改相同就不做紀錄，延續上一個
+class GoalHistory(models.Model):
+    goal_choices = [
+        ('health', '維持身體健康'),
+        ('weight', '減重'),
+        ('fat', '減脂'),
+        ('muscle', '增肌'),
+    ]
+
+    goal = models.CharField(default='health', max_length=30, choices=goal_choices)
+    start_date = models.DateTimeField(auto_now_add=True)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
