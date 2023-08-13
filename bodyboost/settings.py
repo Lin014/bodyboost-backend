@@ -34,6 +34,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'drf_yasg',
+    # 'corsheaders',
     'api',
 ]
 
@@ -145,3 +146,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
+
+# CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_HEADERS = ('*')

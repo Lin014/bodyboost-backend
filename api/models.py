@@ -52,9 +52,12 @@ class Profile(models.Model):
     birthday = models.DateField()
     height = models.FloatField()
     weight = models.FloatField()
+    # 目標體重
     weight_goal = models.FloatField(blank=True, null=True)
     image = models.ImageField(upload_to='profile_img', default='')
+    # 目標
     goal = models.CharField(default='health', max_length=30, choices=goal_choices)
+    # 體脂率
     body_fat = models.FloatField(blank=True, null=True)
     user = models.OneToOneField(Users, on_delete=models.CASCADE)
 
@@ -99,6 +102,7 @@ class Food(models.Model):
     store_id = models.ForeignKey(Store, on_delete=models.SET(''))
 
 # done
+# page
 class CustomFood(models.Model):
     name = models.TextField()
     calorie = models.FloatField()
@@ -131,6 +135,7 @@ class DietRecord(models.Model):
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 
 # done
+# page
 class Sport(models.Model):
     type_choices = (
         ('aerobics', '有氧'),
@@ -145,11 +150,13 @@ class Sport(models.Model):
     type = models.CharField(max_length=10)
 
 # done
+# page
 class SportFrequency(models.Model):
     frequency = models.IntegerField()
     sport = models.OneToOneField(Sport, on_delete=models.CASCADE)
 
 # done
+# page
 class SportGroup(models.Model):
     name = models.TextField()
     rest_time = models.FloatField()
@@ -171,6 +178,7 @@ class SportGroupItem(models.Model):
     sport_group_id = models.ForeignKey(SportGroup, on_delete=models.CASCADE)
 
 # done
+# page
 class SportRecord(models.Model):
     type_choices = (
         ('single', '單一運動'),
@@ -220,7 +228,8 @@ class Animation(models.Model):
     animation = models.FileField(upload_to='animation_video', blank=True, null=True)
     image = models.ImageField(upload_to='animation_img', blank=True, null=True)
     sport_id = models.ForeignKey(Sport, on_delete=models.CASCADE)
-  
+
+# modify
 class Accuracy(models.Model):
     accuracy = models.FloatField()
     label = models.CharField(max_length=15)
@@ -289,8 +298,12 @@ class Achievement(models.Model):
     name = models.TextField()
     description = models.TextField()
     label = models.CharField(max_length=20, choices=label_choices)
-    is_achieve = models.BooleanField(default=False)
-    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+    image = models.TextField()
+
+# class UserAchievement(models.Model):
+#     is_achieve = models.BooleanField(default=False)
+#     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+#     achievement_id = models.ForeignKey(Achievement, on_delete=models.CASCADE)
 
 # 假如目標更改相同就不做紀錄，延續上一個
 class GoalHistory(models.Model):

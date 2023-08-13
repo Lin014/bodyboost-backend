@@ -130,3 +130,4 @@ def insertAchievementData(request):
         return Response({"message": "Add successfully."}, status=200)
     else:
         return Response({"message": "Add failed."}, status=400)
+
