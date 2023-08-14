@@ -116,3 +116,13 @@ class AchievementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Achievement
         fields = '__all__'
+
+class UserAchievementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserAchievement
+        fields = '__all__'
+
+class GoalHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GoalHistory
+        fields = '__all__'

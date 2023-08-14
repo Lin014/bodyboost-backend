@@ -300,12 +300,12 @@ class Achievement(models.Model):
     label = models.CharField(max_length=20, choices=label_choices)
     image = models.TextField()
 
-# class UserAchievement(models.Model):
-#     is_achieve = models.BooleanField(default=False)
-#     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
-#     achievement_id = models.ForeignKey(Achievement, on_delete=models.CASCADE)
+class UserAchievement(models.Model):
+    is_achieve = models.BooleanField(default=False)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+    achievement_id = models.ForeignKey(Achievement, on_delete=models.CASCADE)
 
-# 假如目標更改相同就不做紀錄，延續上一個
+#done
 class GoalHistory(models.Model):
     goal_choices = [
         ('health', '維持身體健康'),

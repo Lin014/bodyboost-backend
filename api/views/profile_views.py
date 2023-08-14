@@ -14,8 +14,10 @@ from .user_views import updateUserStatus
 from ..utils.validate import validateImage
 from ..utils.osFileManage import deleteFile
 from ..swagger.profile import *
-from ..views.weighthistory_views import addWeightHistory, getLatestWeightHistory
-from ..views.bodyfathistory_views import addBodyFatHistory, getLatestBodyFatHistory
+from ..views.weighthistory_views import addWeightHistory
+from ..views.bodyfathistory_views import addBodyFatHistory
+from ..views.goalhistory_views import addGoalHistory
+from ..views.userachievement_views import addUserAchievementList
 
 @swagger_auto_schema(
     methods=['GET'],
@@ -84,8 +86,11 @@ def addProfile(request):
         updateUserStatus(request.data['userID'], 'success')
         # add weight history
         addWeightHistory(request.data['userID'], request.data['weight'])
+        # add goal history
+        addGoalHistory(request.data['userID'], "health")
+        # add userachievement
+        addUserAchievementList(request.data['userID'])
 
-        print("bodyFat " + str(serializer.data))
         return Response(serializer.data)
     else:
         return Response(FormatErrorResponse('Profile'), status=400)
@@ -101,7 +106,7 @@ def addProfile(request):
 @api_view(['PUT'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def updateProfile(request, id):
+def updateProfileByUserId(request, id):
     try:
         updateProfile = Profile.objects.get(user=id)
     except Profile.DoesNotExist:
@@ -111,25 +116,101 @@ def updateProfile(request, id):
     updateProfile.gender = request.data['gender']
     updateProfile.birthday = datetime.strptime(request.data['birthday'], "%Y-%m-%d").date()
     updateProfile.height = request.data['height']
+
+    serializer = ProfileSerializer(updateProfile)
+    if (serializer.is_valid):
+        updateProfile.save()
+
+        return Response(serializer.data, status=200)
+    else:
+        return Response(FormatErrorResponse('Profile'), status=400)
+
+@swagger_auto_schema(
+    methods=['PUT'],
+    tags=["Profile"],
+    operation_summary="更新使用者個人資料",
+    operation_description="輸入user id, 可更新欄位只有以下輸入之欄位，需完整傳入以下欄位之json，就算不需要修改的欄位也要",
+    request_body=updateWeightByUserIdRequestBody,
+    responses=updateProfileResponses
+)
+@api_view(['PUT'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def updateWeightByUserId(request, id):
+    try:
+        updateProfile = Profile.objects.get(user=id)
+    except Profile.DoesNotExist:
+        return Response(NotFoundResponse('Profile'), status=404)
+    
     updateProfile.weight = request.data['weight']
     updateProfile.weight_goal = request.data['weight_goal']
-    updateProfile.goal = request.data['goal']
+
+    serializer = ProfileSerializer(updateProfile)
+    if (serializer.is_valid):
+        updateProfile.save()
+
+        # add weight history
+        addWeightHistory(serializer.data['user'], request.data['weight'])
+
+        return Response(serializer.data, status=200)
+    else:
+        return Response(FormatErrorResponse('Profile'), status=400)
+
+@swagger_auto_schema(
+    methods=['PUT'],
+    tags=["Profile"],
+    operation_summary="更新使用者個人資料",
+    operation_description="輸入user id, 可更新欄位只有以下輸入之欄位，需完整傳入以下欄位之json，就算不需要修改的欄位也要",
+    request_body=updateBodyFatByUserIdRequestBody,
+    responses=updateProfileResponses
+)
+@api_view(['PUT'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def updateBodyFatByUserId(request, id):
+    try:
+        updateProfile = Profile.objects.get(user=id)
+    except Profile.DoesNotExist:
+        return Response(NotFoundResponse('Profile'), status=404)
+    
     updateProfile.body_fat = request.data['body_fat']
 
     serializer = ProfileSerializer(updateProfile)
     if (serializer.is_valid):
         updateProfile.save()
 
-        # check weight and add weight
-        if (request.data['weight'] != getLatestWeightHistory(serializer.data['user']).weight):
-            addWeightHistory(serializer.data['user'], request.data['weight'])
-        
-        if (request.data['body_fat'] != None):
-            if (getLatestBodyFatHistory(serializer.data['user']) != -1):
-                if (request.data['body_fat'] != getLatestBodyFatHistory(serializer.data['user']).body_fat):
-                    addBodyFatHistory(serializer.data['user'], request.data['body_fat'])
-            else:
-                addBodyFatHistory(serializer.data['user'], request.data['body_fat'])
+        # add body fat history
+        addBodyFatHistory(serializer.data['user'], request.data['body_fat'])
+
+        return Response(serializer.data, status=200)
+    else:
+        return Response(FormatErrorResponse('Profile'), status=400)
+    
+@swagger_auto_schema(
+    methods=['PUT'],
+    tags=["Profile"],
+    operation_summary="更新使用者個人資料",
+    operation_description="輸入user id, 可更新欄位只有以下輸入之欄位，需完整傳入以下欄位之json，就算不需要修改的欄位也要",
+    request_body=updateGoalByUserIdRequestBody,
+    responses=updateProfileResponses
+)
+@api_view(['PUT'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def updateGoalByUserId(request, id):
+    try:
+        updateProfile = Profile.objects.get(user=id)
+    except Profile.DoesNotExist:
+        return Response(NotFoundResponse('Profile'), status=404)
+    
+    updateProfile.goal = request.data['goal']
+
+    serializer = ProfileSerializer(updateProfile)
+    if (serializer.is_valid):
+        updateProfile.save()
+
+        # add goal history
+        addGoalHistory(id, request.data['goal'])
 
         return Response(serializer.data, status=200)
     else:
@@ -139,7 +220,7 @@ def updateProfile(request, id):
     methods=['DELETE'],
     tags=["Profile"],
     operation_summary='刪除指定id的使用者個人資料',
-    operation_description="輸入id，刪除使用者個人資料",
+    operation_description="輸入profile id，刪除使用者個人資料",
     responses=deleteProfileResponses
 )
 @api_view(['DELETE'])
