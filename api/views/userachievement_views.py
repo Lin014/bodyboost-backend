@@ -11,6 +11,7 @@ from ..models import UserAchievement, Achievement
 from ..serializers import UserAchievementSerializer, AchievementSerializer
 from ..utils.response import *
 from ..swagger.userachievement import *
+from ..views.achievementrecord_veiws import addAndcheckBodyBooster
 
 @swagger_auto_schema(
     methods=['GET'],
@@ -59,8 +60,13 @@ def updateUserAchievement(request, id):
     userAchievement.is_achieve = request.data['is_achieve']
     userAchievement.save()
 
+    checkBodyBoosterResult = addAndcheckBodyBooster(userAchievement.user_id)
+
     serializer = UserAchievementSerializer(userAchievement)
-    return Response(serializer.data, status=200)
+    result = serializer.data
+    result["isBodyBooster"] = checkBodyBoosterResult["isBodyBooster"]
+    result["count_achieve"] = checkBodyBoosterResult["count_achieve"]
+    return Response(result, status=200)
 
 
 def addUserAchievementList(userId):

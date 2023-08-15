@@ -54,7 +54,10 @@ def addDailyBonusByUserId(request, id):
     all_dailyBonus = DailyBonus.objects.filter(user_id=id).order_by('-date')
     now = timezone.now()
 
-    continuousBonus = 0
+    resultBonus = {
+        "isBodyBooster": "unknown",
+        "continuoust_bonus": -1
+    }
 
     if (all_dailyBonus.count() != 0):
         if now.date() == all_dailyBonus[0].date.date():
@@ -65,17 +68,14 @@ def addDailyBonusByUserId(request, id):
             today = datetime.today()
             yesterday = today - timedelta(days=1)
             if (all_dailyBonus[0].date.date() == yesterday.date()):
-                continuousBonus = updateContinuousBonus(id, 1)
+                resultBonus = updateContinuousBonus(id, 1)
             else:
-                continuousBonus = updateContinuousBonus(id, 2)
-        else:
-            continuousBonus = 30
+                resultBonus = updateContinuousBonus(id, 2)
+
     else:
         achievementRecord = AchievementRecord.objects.get(user_id=id)
         if (achievementRecord.continuous_bonus_state == True):
-            continuousBonus = updateContinuousBonus(id, 2)
-        else:
-            continuousBonus = 30
+            resultBonus = updateContinuousBonus(id, 2)
 
     newDailyBonus = {
         "user_id": id
@@ -88,12 +88,15 @@ def addDailyBonusByUserId(request, id):
 
         result = serializer.data
 
-        if (continuousBonus == 30):
-            result["achievement"] = "Achievement of id: 2 has been achieved."
-            result["continuous_bonus"] = continuousBonus
+        if (resultBonus["continuoust_bonus"] == 30):
+            result["achievement"] = "update achievement id: 2 to achieved"
+        elif (resultBonus["continuoust_bonus"] == -1):
+            result["achievement"] = "achievement id: 2 was already achieved"
         else:
-            result["achievement"] = "Achievement of id: 2 has not yet been achieved."
-            result["continuous_bonus"] = continuousBonus
+            result["achievement"] = "Achievement of id: 2 has not yet been achieved"
+        
+        result["continuous_bonus"] = resultBonus["continuoust_bonus"]
+        result["isBodyBooster"] = resultBonus["isBodyBooster"]
 
         return Response(result, status=200)
     else:

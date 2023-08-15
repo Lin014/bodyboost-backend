@@ -19,8 +19,34 @@ def addAchievementRecord(user_id):
     else:
         return "Failed"
 
+def updateUserAchievement(user_id, achievement_id, is_achieve):
+    userAchievement = UserAchievement.objects.get(user_id=user_id, achievement_id=achievement_id)
+    userAchievement.is_achieve = is_achieve
+    userAchievement.save()
+
+def addAndcheckBodyBooster(user_id):
+    achievementRecord = AchievementRecord.objects.get(user_id=user_id)
+    achievementRecord.count_achieve += 1
+    achievementRecord.save()
+
+    result = {
+        "isBodyBooster": "no",
+        "count_achieve": 0
+    }
+
+    if (achievementRecord.count_achieve == 13):
+        achievementRecord.count_achieve += 1
+        achievementRecord.count_achieve_state = False
+        updateUserAchievement(user_id, 1, True)
+        achievementRecord.save()
+        result["isBodyBooster"] = "yes"
+    
+    result["count_achieve"] = achievementRecord.count_achieve
+    return result
+
 def updateContinuousBonus(user_id, operatorCode):
     achievementRecord = AchievementRecord.objects.get(user_id=user_id)
+    isBodyBooster = "no"
 
     # 1: 有連續
     # 2: 無連續
@@ -35,10 +61,22 @@ def updateContinuousBonus(user_id, operatorCode):
 
     if (achievementRecord.continuous_bonus == 30):
         achievementRecord.continuous_bonus_state = False
+        achievementRecord.count_achieve += 1
         achievementRecord.save()
 
-        userAchievement = UserAchievement.objects.get(user_id=user_id, achievement_id=2)
-        userAchievement.is_achieve = True
-        userAchievement.save()
+        # check bodybooster
+        if (achievementRecord.count_achieve == 13):
+            isBodyBooster = "yes"
+            achievementRecord.count_achieve_state = False
+            updateUserAchievement(user_id, 1, True)
+            achievementRecord.count_achieve += 1
+            achievementRecord.save()
 
-    return achievementRecord.continuous_bonus
+        updateUserAchievement(user_id, 2, True)
+
+    result = {
+        "isBodyBooster": isBodyBooster,
+        "continuoust_bonus": achievementRecord.continuous_bonus
+    }
+    return result
+
