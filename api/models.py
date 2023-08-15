@@ -317,3 +317,25 @@ class GoalHistory(models.Model):
     goal = models.CharField(default='health', max_length=30, choices=goal_choices)
     start_date = models.DateTimeField(auto_now_add=True)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+
+class AchievementRecord(models.Model):
+    
+    # 計算是否達到 bodybooster
+    count_achieve = models.IntegerField(default=0)
+    count_achieve_state = models.BooleanField(default=True)
+    # 計算每日簽到
+    continuous_bonus = models.IntegerField(default=0)
+    continuous_bonus_state = models.BooleanField(default=True)
+    continuous_sodium = models.IntegerField(default=0)
+    continuous_pfc = models.IntegerField(default=0)
+    continuous_calorie = models.IntegerField(default=0)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+
+class DietDayRecord(models.Model):
+
+    calorie = models.FloatField(default=0)
+    protein = models.FloatField(default=0)
+    fat = models.FloatField(default=0)
+    carb = models.FloatField(default=0)
+    sodium = models.FloatField(default=0)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)

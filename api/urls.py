@@ -133,9 +133,9 @@ urlpatterns = [
    path('waterhistory/delete/<int:id>', waterhistory_views.deleteWaterHistory),
    # achievement
    path('achievement/', achievement_views.getAllAchievement),
-   path('achievement/add/<int:id>', achievement_views.addAchievement),
    # goalhistory
    path('goalhistory/<int:id>', goalhistory_views.getGoalHistoryByUserId),
    # userachievement
    path('userachievement/<int:id>', userachievement_views.getUserAchievementByUserId),
+   path('userachievement/update/<int:id>', userachievement_views.updateUserAchievement),
 ] + static(MEDIA_URL, document_root=MEDIA_ROOT)

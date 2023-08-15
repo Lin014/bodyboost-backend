@@ -3,6 +3,7 @@
 
 achievementList = [
     # 查詢某使用者的所有成就是否都為true 除了這個
+    # 前端
     {
         "id": 1,
         "name": "Body Booster",
@@ -10,6 +11,7 @@ achievementList = [
         "label": "common",
         "image": "/media/achievement_img/a1.png"
     },
+    # done
     # 查詢每日簽到是否連續90天(每次簽到即回推90天是否連續)
     {
         "id": 2,

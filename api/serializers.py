@@ -126,3 +126,13 @@ class GoalHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = GoalHistory
         fields = '__all__'
+
+class AchievementRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AchievementRecord
+        fields = '__all__'
+
+class DietDayRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DietDayRecord
+        fields = '__all__'

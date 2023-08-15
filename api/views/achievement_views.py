@@ -14,8 +14,6 @@ from .pagination_views import paginator
 from ..swagger.page import pageManualParameters
 from ..data.achievement import achievementList
 
-import os
-
 @swagger_auto_schema(
     methods=['GET'],
     tags=["Achievement"],
@@ -34,25 +32,3 @@ def getAllAchievement(request):
         return Response(serializer.data, status=200)
     else:
         return Response(NotFoundResponse("Achievement"), status=404)
-
-@swagger_auto_schema(
-    methods=['GET'],
-    tags=["Achievement"],
-    operation_summary='添加成就',
-    operation_description="輸入user id添加成就",
-)
-@api_view(['GET'])
-@authentication_classes([BasicAuthentication])
-@permission_classes([IsAuthenticated])
-def addAchievement(request, id):
-    newAchievementList = achievementList
-    for achievement in newAchievementList:
-        achievement["user_id"] = id
-
-    serializer = AchievementSerializer(data=newAchievementList, many=True)
-    if (serializer.is_valid()):
-        serializer.save()
-        return Response("Successfully", status=200)
-    else:
-        print(serializer.errors)
-        return Response("Failed", status=400)

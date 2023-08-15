@@ -18,6 +18,8 @@ from ..views.weighthistory_views import addWeightHistory
 from ..views.bodyfathistory_views import addBodyFatHistory
 from ..views.goalhistory_views import addGoalHistory
 from ..views.userachievement_views import addUserAchievementList
+from ..views.achievementrecord_veiws import addAchievementRecord
+from ..views.dietdayrecord_views import addDietDayRecord
 
 @swagger_auto_schema(
     methods=['GET'],
@@ -90,6 +92,8 @@ def addProfile(request):
         addGoalHistory(request.data['userID'], "health")
         # add userachievement
         addUserAchievementList(request.data['userID'])
+        addAchievementRecord(request.data['userID'])
+        addDietDayRecord(request.data['userID'])
 
         return Response(serializer.data)
     else:

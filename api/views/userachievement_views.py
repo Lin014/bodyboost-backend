@@ -39,6 +39,29 @@ def getUserAchievementByUserId(request, id):
 
     return Response(result, status=200)
 
+@swagger_auto_schema(
+    methods=['PUT'],
+    tags=["UserAchievement"],
+    operation_summary='更改使用者成就資料',
+    operation_description="輸入userAchievement id更改",
+    request_body=updateUserAchievementRequestBody,
+    responses=getUserAchievementByUserIdResponses
+)
+@api_view(['PUT'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def updateUserAchievement(request, id):
+    try:
+        userAchievement = UserAchievement.objects.get(id=id)
+    except UserAchievement.DoesNotExist:
+        return Response(NotFoundResponse('UserAchievement'), status=404)
+    
+    userAchievement.is_achieve = request.data['is_achieve']
+    userAchievement.save()
+
+    serializer = UserAchievementSerializer(userAchievement)
+    return Response(serializer.data, status=200)
+
 
 def addUserAchievementList(userId):
     achievementList = Achievement.objects.all()
