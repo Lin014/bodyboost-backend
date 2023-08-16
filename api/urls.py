@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf.urls.static import static
 
-from .views import userachievement_views, goalhistory_views, achievement_views, data_views, waterhistory_views, bodyfathistory_views, notificationhistory_views, weighthistory_views, accuracy_views, member_views, setting_views, animation_views, sportrecord_views, sportgroup_views, sportfrequency_views, sport_views, dailybonus_views, dietrecord_views, user_views, profile_views, authentication_views, store_views, foodtype_views, food_views, customfood_views
+from .views import searchfood_views, userachievement_views, goalhistory_views, achievement_views, data_views, waterhistory_views, bodyfathistory_views, notificationhistory_views, weighthistory_views, accuracy_views, member_views, setting_views, animation_views, sportrecord_views, sportgroup_views, sportfrequency_views, sport_views, dailybonus_views, dietrecord_views, user_views, profile_views, authentication_views, store_views, foodtype_views, food_views, customfood_views
 
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -63,9 +63,6 @@ urlpatterns = [
     path('foodtype/delete/<int:id>', foodtype_views.deleteFoodType),
    # food
    path('food/', food_views.getAllFood),
-   path('food/foodtype/<int:id>', food_views.getFoodByFoodTypeId),
-   path('food/store/<int:id>', food_views.getFoodByStoreId),
-   path('food/search', food_views.getFoodByName, name='get-food-by-name'),
    path('food/add/', food_views.addFood),
    path('food/update/<int:id>', food_views.updateFood),
    path('food/delete/<int:id>', food_views.deleteFood),
@@ -75,9 +72,14 @@ urlpatterns = [
    path('customfood/add/', customfood_views.addCustomFood),
    path('customfood/update/<int:id>', customfood_views.updateCustomFood),
    path('customfood/delete/<int:id>', customfood_views.deleteCustomFood),
+   # searchfood
+   path('searchfood/foodtype/<int:id>/<int:userId>', searchfood_views.getFoodByFoodTypeId),
+   path('searchfood/store/<int:id>/<int:userId>', searchfood_views.getFoodByStoreId),
+   path('searchfood/word/<int:userId>', searchfood_views.getFoodByName, name='get-food-by-name'),
    # dietrecord
    path('dietrecord/<int:id>', dietrecord_views.getDietRecordById),
    path('dietrecord/add/', dietrecord_views.addDietRecord),
+   path('dietrecord/add/many', dietrecord_views.addDietRecordList),
    path('dietrecord/update/<int:id>', dietrecord_views.updateDietRecord),
    path('dietrecord/delete/<int:id>', dietrecord_views.deleteDietRecord),
    # sport

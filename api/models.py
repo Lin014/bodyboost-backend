@@ -112,6 +112,7 @@ class CustomFood(models.Model):
     fat = models.FloatField(blank=True, null=True)
     carb = models.FloatField(blank=True, null=True)
     sodium = models.FloatField(blank=True, null=True)
+    modify = models.BooleanField()
     food_type_id = models.ForeignKey(FoodType, on_delete=models.SET(''))
     store_id = models.ForeignKey(Store, on_delete=models.SET(''))
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
@@ -119,7 +120,6 @@ class CustomFood(models.Model):
 # done
 class DietRecord(models.Model):
     date = models.DateTimeField()
-    serving_amount = models.FloatField(blank=True, null=True) #
     label = models.TextField(blank=True, null=True)
     name = models.TextField()
     calorie = models.FloatField()

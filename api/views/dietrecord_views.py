@@ -34,7 +34,7 @@ def getDietRecordById(request, id):
 @swagger_auto_schema(
     methods=['POST'],
     tags=["DietRecord"],
-    operation_summary="添加飲食紀錄",
+    operation_summary="添加單筆飲食紀錄",
     operation_description="",
     request_body=addDietRecordRequestBody,
     responses=addDietRecordResponses
@@ -53,6 +53,49 @@ def addDietRecord(request):
     newDietRecord = request.data
 
     serializer = DietRecordSerializer(data=newDietRecord)
+    if (serializer.is_valid()):
+        serializer.save()
+        return Response(serializer.data)
+    else:
+        return Response(FormatErrorResponse('DietRecord'), status=400)
+
+@swagger_auto_schema(
+    methods=['POST'],
+    tags=["DietRecord"],
+    operation_summary="添加多筆飲食紀錄",
+    operation_description="",
+    request_body=addDietRecordListRequestBody,
+    responses=addDietRecordResponses
+)
+@api_view(['POST'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def addDietRecordList(request):
+    try:
+        user = Users.objects.get(id=request.data['user_id'])
+    except Users.DoesNotExist:
+        return Response(NotFoundResponse('User'), status=400)
+    
+    newDietRecordList = []
+    for item in request.data['items']:
+        newDietRecordList.append({
+            "date": request.data['date'],
+            "label": request.data['label'],
+            "user_id": request.data['user_id'],
+            "name": item['name'],
+            "calorie": item['calorie'],
+            "size": item['size'],
+            "unit": item['unit'],
+            "protein": item['protein'],
+            "fat": item['fat'],
+            "carb": item['carb'],
+            "sodium": item['sodium'],
+            "modify": item['modify'],
+            "food_type_id": item['food_type_id'],
+            "store_id": item['store_id'],
+        })
+    
+    serializer = DietRecordSerializer(data=newDietRecordList, many=True)
     if (serializer.is_valid()):
         serializer.save()
         return Response(serializer.data)
