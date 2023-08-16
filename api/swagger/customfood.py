@@ -45,6 +45,10 @@ addCustomFoodRequestBody = openapi.Schema(
             type=openapi.TYPE_NUMBER,
             description='鈉，浮點數型態'
         ),
+        'modify': openapi.Schema(
+            type=openapi.TYPE_BOOLEAN,
+            description='可調整克數與不可調整克數，True or False'
+        ),
         'food_type_id': openapi.Schema(
             type=openapi.TYPE_INTEGER,
             description='食物類型關聯id'
