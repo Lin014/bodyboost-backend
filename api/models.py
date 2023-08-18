@@ -121,6 +121,7 @@ class CustomFood(models.Model):
 class DietRecord(models.Model):
     date = models.DateTimeField()
     label = models.TextField(blank=True, null=True)
+    serving_amount = models.FloatField()
     name = models.TextField()
     calorie = models.FloatField()
     size = models.FloatField(blank=True, null=True)
@@ -326,13 +327,15 @@ class AchievementRecord(models.Model):
     # 計算每日簽到
     continuous_bonus = models.IntegerField(default=0)
     continuous_bonus_state = models.BooleanField(default=True)
-    continuous_sodium = models.IntegerField(default=0)
-    continuous_pfc = models.IntegerField(default=0)
-    continuous_calorie = models.IntegerField(default=0)
+    continuous_sodium_state = models.BooleanField(default=True)
+    continuous_pfc_state = models.BooleanField(default=True)
+    continuous_calorie_state = models.BooleanField(default=True)
+    continuous_protein_state = models.BooleanField(default=True)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 
 class DietDayRecord(models.Model):
 
+    date = models.DateField(default=timezone.now)
     calorie = models.FloatField(default=0)
     protein = models.FloatField(default=0)
     fat = models.FloatField(default=0)

@@ -93,7 +93,7 @@ def addProfile(request):
         # add userachievement
         addUserAchievementList(request.data['userID'])
         addAchievementRecord(request.data['userID'])
-        addDietDayRecord(request.data['userID'])
+        # addDietDayRecord(request.data['userID'])
 
         return Response(serializer.data)
     else:

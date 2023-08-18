@@ -21,6 +21,10 @@ addDietRecordRequestBody = openapi.Schema(
             type=openapi.TYPE_STRING,
             description='標籤，例如：早餐、早午餐、午餐、晚餐'
         ),
+        'serving_amount': openapi.Schema(
+            type=openapi.TYPE_NUMBER,
+            description='熱量，浮點數型態'
+        ),
         'name': openapi.Schema(
             type=openapi.TYPE_STRING,
             description='名稱'
@@ -99,6 +103,10 @@ addDietRecordListRequestBody = openapi.Schema(
             items=openapi.Schema(
                 type=openapi.TYPE_OBJECT,
                 properties={
+                    'serving_amount': openapi.Schema(
+                        type=openapi.TYPE_NUMBER,
+                        description='熱量，浮點數型態'
+                    ),
                     'name': openapi.Schema(
                         type=openapi.TYPE_STRING,
                         description='名稱'

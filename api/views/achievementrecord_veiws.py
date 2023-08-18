@@ -24,9 +24,9 @@ def updateUserAchievement(user_id, achievement_id, is_achieve):
     userAchievement.is_achieve = is_achieve
     userAchievement.save()
 
-def addAndcheckBodyBooster(user_id):
+def addAndcheckBodyBooster(user_id, addAmount):
     achievementRecord = AchievementRecord.objects.get(user_id=user_id)
-    achievementRecord.count_achieve += 1
+    achievementRecord.count_achieve += addAmount
     achievementRecord.save()
 
     result = {

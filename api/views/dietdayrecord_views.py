@@ -6,6 +6,8 @@ from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
+from datetime import datetime
+
 from ..models import DietDayRecord
 from ..serializers import DietDayRecordSerializer
 from ..utils.response import *
@@ -18,3 +20,4 @@ def addDietDayRecord(user_id):
         return "SuccessFully"
     else:
         return "Failed"
+
