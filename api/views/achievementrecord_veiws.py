@@ -6,8 +6,8 @@ from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-from ..models import AchievementRecord, UserAchievement
-from ..serializers import AchievementRecordSerializer
+from ..models import AchievementRecord, UserAchievement, UserAchievedSport, Sport
+from ..serializers import AchievementRecordSerializer, UserAchievedSportSerializer
 from ..utils.response import *
 
 def addAchievementRecord(user_id):
@@ -78,5 +78,67 @@ def updateContinuousBonus(user_id, operatorCode):
         "isBodyBooster": isBodyBooster,
         "continuoust_bonus": achievementRecord.continuous_bonus
     }
+    return result
+
+def addUserAchievedSport(user_id, sportList):
+    newUserAchievedSport = []
+    for sport in sportList:
+        try:
+            userAchievedSport = UserAchievedSport.objects.get(user_id=user_id, sport_id=sport.id)
+        except UserAchievedSport.DoesNotExist:
+            newUserAchievedSport.append({
+                "sport_id": sport.id,
+                "user_id": user_id
+            })
+    
+    if newUserAchievedSport:
+        serializer = UserAchievedSportSerializer(data=newUserAchievedSport, many=True)
+        if (serializer.is_valid()):
+            serializer.save()
+            return "Successfully"
+        else:
+            return "Failed"
+    else:
+        return "Successfully"
+
+def checkUnlockSportAchievedment(user_id):
+    achievementRecord = AchievementRecord.objects.get(user_id=user_id)
+
+    if achievementRecord.count_achieve_state:
+        countUserAchievedSport = UserAchievedSport.objects.filter(user_id=user_id).count()
+        countSport = Sport.objects.count()
+
+        achievedAchievement = []
+        if (achievementRecord.sport_ten_state and countUserAchievedSport == 10):
+            achievedAchievement.append(3)
+            updateUserAchievement(user_id, 3, True)
+            achievementRecord.sport_ten_state = False
+            
+        if (achievementRecord.sport_twenty_state and countUserAchievedSport == 20):
+            achievedAchievement.append(4)
+            updateUserAchievement(user_id, 4, True)
+            achievementRecord.sport_twenty_state = False
+            
+        if (achievementRecord.sport_all_state and countUserAchievedSport == countSport):
+            achievedAchievement.append(5)
+            updateUserAchievement(user_id, 5, True)
+            achievementRecord.sport_all_state = False
+        
+        achievementRecord.save()
+        
+        checkBodyBooster = addAndcheckBodyBooster(user_id, len(achievedAchievement))
+        if (checkBodyBooster['isBodyBooster'] == "yes"):
+                achievedAchievement.append(1)
+        
+        result = {
+            "achieved_achievement": achievedAchievement,
+            "count_achieve": checkBodyBooster['count_achieve']
+        }
+    else:
+        result = {
+            "achieved_achievement": [],
+            "count_achieve": 14
+        }
+    
     return result
 

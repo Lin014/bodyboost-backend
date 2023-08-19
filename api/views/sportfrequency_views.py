@@ -62,14 +62,36 @@ def addSportFrequency(request):
             'sport': request.data['sport_id']
         }
 
-        newSportFrequency['frequency'] = 1
-
         serializer = SportFrequencySerializer(data=newSportFrequency)
         if (serializer.is_valid()):
             serializer.save()
             return Response({ 'message': 'Add Successfully.'}, status=200)
         else:
             return Response(FormatErrorResponse('SportFrequency'), status=400)
+
+def addSportFrequencyList(sportList):
+    sportFrequencyList = []
+    for sport in sportList:
+        try:
+            sportFrequency = SportFrequency.objects.get(sport=sport.id)
+            sportFrequency.frequency += 1
+            sportFrequency.save()
+        except SportFrequency.DoesNotExist:
+            sportFrequencyList.append(
+                newSportFrequency = {
+                'frequency': 1,
+                'sport': sport.id
+            })
+    
+    if (sportFrequencyList):
+        serializer = SportFrequencySerializer(data=sportFrequencyList, many=True)
+        if (serializer.is_valid()):
+            serializer.save()
+            return "Successfully"
+        else:
+            return "Failed"
+    else:
+        return "Successfully"
 
 @swagger_auto_schema(
     methods=['DELETE'],

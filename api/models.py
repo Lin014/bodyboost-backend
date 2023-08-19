@@ -148,7 +148,7 @@ class Sport(models.Model):
     interval = models.FloatField()
     is_count = models.BooleanField()
     met = models.FloatField()
-    type = models.CharField(max_length=10)
+    type = models.CharField(max_length=10, choices=type_choices)
 
 # done
 # page
@@ -207,13 +207,9 @@ class SportRecordItem(models.Model):
     )
 
     # copy sport field
-    name = models.TextField()
-    description = models.TextField(blank=True, null=True)
+    sport_id = models.ForeignKey(Sport, on_delete=models.DO_NOTHING)
     custom_time = models.FloatField(blank=True, null=True)
     custom_counts = models.IntegerField(blank=True, null=True)
-    interval = models.FloatField()
-    is_count = models.BooleanField()
-    met = models.FloatField()
     # other field
     no = models.IntegerField()
     mode = models.CharField(max_length=20, choices=mode_choices)
@@ -327,10 +323,17 @@ class AchievementRecord(models.Model):
     # 計算每日簽到
     continuous_bonus = models.IntegerField(default=0)
     continuous_bonus_state = models.BooleanField(default=True)
+    # 紀錄飲食成就
     continuous_sodium_state = models.BooleanField(default=True)
     continuous_pfc_state = models.BooleanField(default=True)
     continuous_calorie_state = models.BooleanField(default=True)
     continuous_protein_state = models.BooleanField(default=True)
+    continuous_record = models.IntegerField(default=0)
+    continuous_record_state = models.BooleanField(default=True)
+    # 紀錄運動成就
+    sport_ten_state = models.BooleanField(default=True)
+    sport_twenty_state = models.BooleanField(default=True)
+    sport_all_state = models.BooleanField(default=True)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 
 class DietDayRecord(models.Model):
@@ -341,4 +344,9 @@ class DietDayRecord(models.Model):
     fat = models.FloatField(default=0)
     carb = models.FloatField(default=0)
     sodium = models.FloatField(default=0)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+
+class UserAchievedSport(models.Model):
+    date = models.DateField(auto_now_add=True)
+    sport_id = models.ForeignKey(Sport, on_delete=models.DO_NOTHING)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)

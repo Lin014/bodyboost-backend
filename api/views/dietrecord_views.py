@@ -62,7 +62,7 @@ def addDietRecord(request):
         result = [
             serializer.data, 
             { 
-                "checkResult": checkDietRecord(request.data['user_id'])
+                "checkResult": checkDietRecord(serializer.data, request.data['user_id'])
             }
         ]
         return Response(result, status=200)
@@ -113,16 +113,17 @@ def addDietRecordList(request):
         result = [
             serializer.data, 
             { 
-                "checkResult": checkDietRecord(request.data['user_id'])
+                "checkResult": checkDietRecord(serializer.data[0], request.data['user_id'])
             }
         ]
         return Response(result, status=200)
     else:
         return Response(FormatErrorResponse('DietRecord'), status=400)
 
-def checkDietRecord(user_id):
+def checkDietRecord(updateDietRecord, user_id):
     achievementRecord = AchievementRecord.objects.get(user_id=user_id)
-    if (achievementRecord.count_achieve_state == True):
+
+    if achievementRecord.count_achieve_state:
         threeDaysAgo = datetime.now().date() - timedelta(days=3)
         dietRecordList = DietRecord.objects.filter(user_id=user_id, date__lte=threeDaysAgo).order_by('-date')
         profile = Profile.objects.get(user=user_id)
@@ -175,7 +176,7 @@ def checkDietRecord(user_id):
                     countCarb += carb if carb is not None else 0
 
                 if (achievementRecord.continuous_protein_state and protein is not None):
-                    countBeanProtein += protein if dietRecord.food_type_id is 7 else 0
+                    countBeanProtein += protein if dietRecord.food_type_id == 7 else 0
 
                 print(countCalorie, countProtein, countBeanProtein, countFat, countCarb, countSodium)
             else:
@@ -207,6 +208,9 @@ def checkDietRecord(user_id):
                 if (achievementRecord.continuous_protein_state == True):
                     if (countBeanProtein > (countProtein * 0.8)):
                         continuousProteinDays += 1
+                
+                if (continuousProteinDays >= 30 and continuousSodiumDays >= 30 and continuousPFCDays >= 30 and continuousCalorieDays >= 30):
+                    break
                 
                 # 清空資料
                 countDataAmount = 0
@@ -265,6 +269,20 @@ def checkDietRecord(user_id):
             achievedAchievement.append(13)
             updateUserAchievement(user_id, 13, True)
             achievementRecord.continuous_protein_state = False
+
+        # if achievementRecord.continuous_record_state:
+        #     dietRecord = DietRecord.objects.get(id=updateDietRecord['id'])
+        #     yesterday = dietRecord.date - timedelta(days=1)
+        #     try:
+        #         yesterdayDietRecord = DietRecord.objects.filter(date=yesterday.date()).first()
+        #         achievementRecord.continuous_record += 1
+
+        #         if (achievementRecord.continuous_record == 30):
+        #             achievedAchievement.append(14)
+        #             updateUserAchievement(user_id, 14, True)
+        #             achievementRecord.continuous_record_state = False
+        #     except DietRecord.DoesNotExist:
+        #         pass
         
         achievementRecord.save()
 

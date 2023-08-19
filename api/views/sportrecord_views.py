@@ -14,6 +14,8 @@ from ..swagger.sportrecord import *
 from ..utils.validate import validateVideo
 from .pagination_views import paginator
 from ..swagger.page import pageManualParameters
+from ..views.sportfrequency_views import addSportFrequencyList
+from ..views.achievementrecord_veiws import addUserAchievedSport, checkUnlockSportAchievedment
 
 @swagger_auto_schema(
     methods=['GET'],
@@ -71,7 +73,7 @@ def addSportRecord(request):
                 sport = Sport.objects.get(id=request.data['sport_id'])
             except Sport.DoesNotExist:
                 return Response(NotFoundResponse('Sport'), status=404)
-            
+
             newSportRecord = {
                 'type': request.data['type'],
                 'is_record_video': request.data['is_record_video'],
@@ -85,11 +87,7 @@ def addSportRecord(request):
                 return Response(FormatErrorResponse('SportRecord'), status=400)
             
             newSportRecordItem = {
-                'name': sport.name,
-                'description': sport.description,
-                'interval': sport.interval,
-                'is_count': sport.is_count,
-                'met': sport.met,
+                'sport_id': sport.id,
                 'no': 1,
                 'mode': request.data['mode'],
                 'sport_record_id': sportRecordSerializer.data['id']
@@ -106,6 +104,7 @@ def addSportRecord(request):
 
                 sportRecord = sportRecordSerializer.data
                 sportRecord['item'] = sportRecordItemSerializer.data
+
                 return Response(sportRecord, status=200)
             else:
                 return Response(FormatErrorResponse('SportRecordItem'), status=400)
@@ -134,13 +133,9 @@ def addSportRecord(request):
             for sportGroupItem in sportGroupItems:
                 sport = sportGroupItem.sport_id
                 sportRecordItems.append({
-                    'name': sport.name,
-                    'description': sport.description,
+                    'sport_id': sport.id,
                     'custom_time': sportGroupItem.custom_time,
                     'custom_counts': sportGroupItem.custom_counts,
-                    'interval': sport.interval,
-                    'is_count': sport.is_count,
-                    'met': sport.met,
                     'no': sportGroupItem.no,
                     'mode': sportGroupItem.mode,
                     'sport_record_id': sportRecordSerializer.data['id']
@@ -149,8 +144,10 @@ def addSportRecord(request):
             sportRecordItemSerializer = SportRecordItemSerializer(data=sportRecordItems, many=True)
             if (sportRecordItemSerializer.is_valid()):
                 sportRecordItemSerializer.save()
+
                 sportRecord = sportRecordSerializer.data
                 sportRecord['items'] = sportRecordItemSerializer.data
+
                 return Response(sportRecord, status=200)
             else:
                 return Response(FormatErrorResponse('SportRecordItem'), status=400)      
@@ -163,8 +160,8 @@ def addSportRecord(request):
 @swagger_auto_schema(
     methods=['PUT'],
     tags=["SportRecord"],
-    operation_summary="更新運動紀錄項目",
-    operation_description="當運動項目做完時即要更新",
+    operation_summary="更新運動紀錄項目 (SportRecordItem)",
+    operation_description="輸入sportRecordItem id當運動項目做完時即要更新",
     request_body=updateSportRecordItemRequestBody,
     responses=updateSportRecordItemResponses
 )
@@ -193,9 +190,18 @@ def updateSportRecordItem(request, id):
         sportRecord.is_completed = True
     
     sportRecord.save()
-    SportRecordItemSerializer = SportRecordItemSerializer(sportRecordItem)
-    return Response(SportRecordItemSerializer.data, status=200)
+    sportRecordItemSerializer = SportRecordItemSerializer(sportRecordItem)
 
+    addSportFrequencyList([sportRecordItem.sport_id])
+    addUserAchievedSport(sportRecordItem.sport_record_id.user_id.id, [sportRecordItem.sport_id])
+    checkResult = checkUnlockSportAchievedment(sportRecordItem.sport_record_id.user_id)
+    result = [
+        sportRecordItemSerializer.data,
+        { 
+            "checkResult": checkResult
+        }
+    ]
+    return Response(result, status=200)
 
 
 @swagger_auto_schema(
