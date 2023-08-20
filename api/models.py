@@ -350,3 +350,7 @@ class UserAchievedSport(models.Model):
     date = models.DateField(auto_now_add=True)
     sport_id = models.ForeignKey(Sport, on_delete=models.DO_NOTHING)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+
+class DietRecordDate(models.Model):
+    date = models.DateField()
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)

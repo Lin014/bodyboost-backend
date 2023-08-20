@@ -6,9 +6,10 @@ from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 
 from datetime import datetime, timedelta
+from django.utils import timezone
 
-from ..models import DietRecord, Users, FoodType, Store, Profile, AchievementRecord
-from ..serializers import DietRecordSerializer
+from ..models import DietRecord, Users, FoodType, Store, Profile, AchievementRecord, DietRecordDate
+from ..serializers import DietRecordSerializer, DietRecordDateSerializer
 from ..utils.response import *
 from ..swagger.dietrecord import *
 from ..views.achievementrecord_veiws import updateUserAchievement, addAndcheckBodyBooster
@@ -120,13 +121,13 @@ def addDietRecordList(request):
     else:
         return Response(FormatErrorResponse('DietRecord'), status=400)
 
-def checkDietRecord(updateDietRecord, user_id):
-    achievementRecord = AchievementRecord.objects.get(user_id=user_id)
+def checkDietRecord(updateDietRecord, userId):
+    achievementRecord = AchievementRecord.objects.get(user_id=userId)
 
     if achievementRecord.count_achieve_state:
         threeDaysAgo = datetime.now().date() - timedelta(days=3)
-        dietRecordList = DietRecord.objects.filter(user_id=user_id, date__lte=threeDaysAgo).order_by('-date')
-        profile = Profile.objects.get(user=user_id)
+        dietRecordList = DietRecord.objects.filter(user_id=userId, date__lte=threeDaysAgo).order_by('-date')
+        profile = Profile.objects.get(user=userId)
 
         date = dietRecordList[0].date.date()
         countDataAmount = 0
@@ -188,7 +189,7 @@ def checkDietRecord(updateDietRecord, user_id):
                             continuousSodiumDays += 1
                 # 均衡飲食(11)
                 if (achievementRecord.continuous_pfc_state == True):
-                    if (countProteinDataAmount/countDataAmount >= 0.85):
+                    if (((countProteinDataAmount/countDataAmount) >= 0.85) and (countCalorie != 0)):
                         proteinPercent = (countProtein*4)/countCalorie
                         if (proteinPercent >= 0.1 and proteinPercent <= 0.35):
                             fatPercent = (countFat*9)/countCalorie
@@ -205,7 +206,7 @@ def checkDietRecord(updateDietRecord, user_id):
                         if (countCalorie >= 1200 and countCalorie <= 1500):
                             continuousCalorieDays += 1
                 # 植物蛋白質達人(13)
-                if (achievementRecord.continuous_protein_state == True):
+                if (achievementRecord.continuous_protein_state and (countProtein != 0)):
                     if (countBeanProtein > (countProtein * 0.8)):
                         continuousProteinDays += 1
                 
@@ -241,7 +242,7 @@ def checkDietRecord(updateDietRecord, user_id):
                         countCarb += carb if carb is not None else 0
 
                     if (achievementRecord.continuous_protein_state and protein is not None):
-                        countBeanProtein += protein if dietRecord.food_type_id is 7 else 0
+                        countBeanProtein += protein if dietRecord.food_type_id == 7 else 0
 
                     print(countCalorie, countProtein, countBeanProtein, countFat, countCarb, countSodium)
                 else:
@@ -252,41 +253,49 @@ def checkDietRecord(updateDietRecord, user_id):
         achievedAchievement = []
         if (achievementRecord.continuous_sodium_state and continuousSodiumDays == 30):
             achievedAchievement.append(10)
-            updateUserAchievement(user_id, 10, True)
+            updateUserAchievement(userId, 10, True)
             achievementRecord.continuous_sodium_state = False
         
         if (achievementRecord.continuous_pfc_state and continuousPFCDays == 7):
             achievedAchievement.append(11)
-            updateUserAchievement(user_id, 11, True)
+            updateUserAchievement(userId, 11, True)
             achievementRecord.continuous_pfc_state = False
 
         if (achievementRecord.continuous_calorie_state and continuousCalorieDays == 7):
             achievedAchievement.append(12)
-            updateUserAchievement(user_id, 12, True)
+            updateUserAchievement(userId, 12, True)
             achievementRecord.continuous_calorie_state = False
         
         if (achievementRecord.continuous_protein_state and continuousProteinDays == 30):
             achievedAchievement.append(13)
-            updateUserAchievement(user_id, 13, True)
+            updateUserAchievement(userId, 13, True)
             achievementRecord.continuous_protein_state = False
 
-        # if achievementRecord.continuous_record_state:
-        #     dietRecord = DietRecord.objects.get(id=updateDietRecord['id'])
-        #     yesterday = dietRecord.date - timedelta(days=1)
-        #     try:
-        #         yesterdayDietRecord = DietRecord.objects.filter(date=yesterday.date()).first()
-        #         achievementRecord.continuous_record += 1
+        if achievementRecord.continuous_record_state:
+            dietRecord = DietRecord.objects.get(id=updateDietRecord['id'])
 
-        #         if (achievementRecord.continuous_record == 30):
-        #             achievedAchievement.append(14)
-        #             updateUserAchievement(user_id, 14, True)
-        #             achievementRecord.continuous_record_state = False
-        #     except DietRecord.DoesNotExist:
-        #         pass
+            if (dietRecord.date.date() == timezone.now().date()):
+                try:
+                    dietRecordDate = DietRecordDate.objects.get(user_id=userId, date=dietRecord.date.date())
+                except DietRecordDate.DoesNotExist:
+                    newDietRecordDate = {
+                        "date": dietRecord.date.date(),
+                        "user_id": userId
+                    }
+                    serializer = DietRecordDateSerializer(data=newDietRecordDate)
+                    if (serializer.is_valid()):
+                        serializer.save()
+                        
+                    achievementRecord.continuous_record += 1
+
+                    if (achievementRecord.continuous_record == 30):
+                        achievedAchievement.append(14)
+                        updateUserAchievement(userId, 14, True)
+                        achievementRecord.continuous_record_state = False
         
         achievementRecord.save()
 
-        checkBodyBooster = addAndcheckBodyBooster(user_id, len(achievedAchievement))
+        checkBodyBooster = addAndcheckBodyBooster(userId, len(achievedAchievement))
         if (checkBodyBooster['isBodyBooster'] == "yes"):
             achievedAchievement.append(1)
 

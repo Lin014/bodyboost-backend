@@ -141,3 +141,8 @@ class UserAchievedSportSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserAchievedSport
         fields = '__all__'
+
+class DietRecordDateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DietRecordDate
+        fields = '__all__'
