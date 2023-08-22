@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from datetime import datetime
 
 from drf_yasg.utils import swagger_auto_schema
+from django.utils import timezone
 from drf_yasg import openapi
 
 from ..models import Profile, Users
@@ -19,7 +20,7 @@ from ..views.bodyfathistory_views import addBodyFatHistory
 from ..views.goalhistory_views import addGoalHistory
 from ..views.userachievement_views import addUserAchievementList
 from ..views.achievementrecord_veiws import addAchievementRecord
-from ..views.dietdayrecord_views import addDietDayRecord
+from ..views.sportrecordweek_views import addSportRecordWeek
 
 @swagger_auto_schema(
     methods=['GET'],
@@ -92,8 +93,9 @@ def addProfile(request):
         addGoalHistory(request.data['userID'], "health")
         # add userachievement
         addUserAchievementList(request.data['userID'])
-        addAchievementRecord(request.data['userID'])
-        # addDietDayRecord(request.data['userID'])
+        # add sport achievement data
+        newSportRecordWeek = addSportRecordWeek(rUser.id, timezone.now())
+        addAchievementRecord(request.data['userID'], newSportRecordWeek['id'])
 
         return Response(serializer.data)
     else:

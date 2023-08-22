@@ -104,6 +104,7 @@ urlpatterns = [
    path('sportrecord/update/<int:id>', sportrecord_views.updateSportRecordItem),
    path('sportrecord/delete/<int:id>', sportrecord_views.deleteSportRecord),
    path('sportrecord/latest/<int:id>', sportrecord_views.getLatestSportRecordByUserId),
+   path('sportrecord/check', sportrecord_views.checkSport),
    # sportrecorditem
    path('sportrecorditem/uploadvideo/<int:id>', sportrecord_views.uploadSportRecordItemVideo),
    # animation

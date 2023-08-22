@@ -8,16 +8,16 @@ from drf_yasg import openapi
 
 from datetime import datetime
 
-from ..models import DietDayRecord
-from ..serializers import DietDayRecordSerializer
-from ..utils.response import *
+# from ..models import DietDayRecord
+# from ..serializers import DietDayRecordSerializer
+# from ..utils.response import *
 
-def addDietDayRecord(user_id):
-    newDietDayRecord = { "user_id": user_id, }
-    serializer = DietDayRecordSerializer(data=newDietDayRecord)
-    if (serializer.is_valid()):
-        serializer.save()
-        return "SuccessFully"
-    else:
-        return "Failed"
+# def addDietDayRecord(user_id):
+#     newDietDayRecord = { "user_id": user_id, }
+#     serializer = DietDayRecordSerializer(data=newDietDayRecord)
+#     if (serializer.is_valid()):
+#         serializer.save()
+#         return "SuccessFully"
+#     else:
+#         return "Failed"
 

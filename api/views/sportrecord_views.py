@@ -4,10 +4,11 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 from django.utils import timezone
+from datetime import datetime, timedelta
 
 from drf_yasg.utils import swagger_auto_schema
 
-from ..models import SportRecord, SportRecordItem, Sport, Users, SportGroup, SportGroupItem
+from ..models import Profile, SportRecord, SportRecordItem, Sport, Users, SportGroup, SportGroupItem, AchievementRecord, SportRecordWeek, DietRecord
 from ..serializers import SportRecordSerializer, SportRecordItemSerializer
 from ..utils.response import *
 from ..swagger.sportrecord import *
@@ -15,7 +16,8 @@ from ..utils.validate import validateVideo
 from .pagination_views import paginator
 from ..swagger.page import pageManualParameters
 from ..views.sportfrequency_views import addSportFrequencyList
-from ..views.achievementrecord_veiws import addUserAchievedSport, checkUnlockSportAchievedment
+from ..views.achievementrecord_veiws import addUserAchievedSport, checkUnlockSportAchievedment, updateUserAchievement, addAndcheckBodyBooster
+from ..views.sportrecordweek_views import addSportRecordWeek
 
 @swagger_auto_schema(
     methods=['GET'],
@@ -159,7 +161,7 @@ def addSportRecord(request):
 
 @swagger_auto_schema(
     methods=['PUT'],
-    tags=["SportRecord"],
+    tags=["SportRecordItem"],
     operation_summary="更新運動紀錄項目 (SportRecordItem)",
     operation_description="輸入sportRecordItem id當運動項目做完時即要更新",
     request_body=updateSportRecordItemRequestBody,
@@ -174,6 +176,7 @@ def updateSportRecordItem(request, id):
     except:
         return Response(NotFoundResponse('SportRecordItem'), status=404)
     
+    sportRecordItem.completed_time = request.data['completed_time']
     sportRecordItem.time = request.data['time']
     sportRecordItem.counts = request.data['counts']
     sportRecordItem.consumed_kcal = request.data['consumed_kcal']
@@ -202,6 +205,176 @@ def updateSportRecordItem(request, id):
         }
     ]
     return Response(result, status=200)
+
+@swagger_auto_schema(
+    methods=['POST'],
+    tags=["SportRecordItem"],
+    operation_summary="判斷運動紀錄項目是否符合成就 (SportRecordItem)",
+    operation_description="輸入要判斷的sportRecordItem陣列",
+    request_body=checkSportRequestBody,
+    responses=updateSportRecordItemResponses
+)
+@api_view(['POST'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def checkSport(request):
+    sportRecordItemList = request.data
+    print(request.data)
+
+    sportRecord = SportRecord.objects.get(id=request.data[0]["sport_record_id"])
+    userId = sportRecord.user_id.id
+    achievementRecord = AchievementRecord.objects.get(user_id=userId)
+    sportRecordWeek = SportRecordWeek.objects.get(user_id=userId)
+
+    seventyfive_achievement = False
+    hundredeighty_achievement = False
+
+    achievedAchievement = []
+    
+    if achievementRecord.sport_time_seventyfive_state or achievementRecord.sport_time_hundredeighty_state:
+        for sportRecordItem in sportRecordItemList:
+            datetime_format = "%Y-%m-%d"
+            datetime_str = sportRecordItem['completed_time'][:10]
+            print(sportRecordItem['completed_time'])
+            completeDate = datetime.strptime(datetime_str, datetime_format)
+
+            if (completeDate.date() >= sportRecordWeek.start_date and completeDate.date() < sportRecordWeek.end_date):
+                sportRecordWeek.seconds += sportRecordItem['time']
+                sportRecordWeek.save()
+            elif (completeDate.date() >= sportRecordWeek.end_date):
+                timeDelta = timedelta(days=7)
+                startDate = sportRecordWeek.end_date
+                endDate = startDate + timeDelta
+
+                if (completeDate.date() < endDate):
+                    # 結算 這週是否達成 達成就+1
+                    if ((sportRecordWeek.seconds != 0) and ((sportRecordWeek.seconds / 60) >= 75)):
+                        start = sportRecordWeek.start_date
+                        end = sportRecordWeek.end_date - timedelta(days=1)
+                        try:
+                            if ((sportRecordWeek.seconds / 60) >= 180):
+                                achievementRecord.continuous_sport_hundredeighty_week += 1
+
+                            dietRecordList = DietRecord.objects.filter(date__range=(start, end)).order_by('date')
+                            if(checkDiet(dietRecordList, userId)):
+                                achievementRecord.continuous_sport_seventyfive_week += 1
+                        except DietRecord.DoesNotExist:
+                            pass
+
+                        sportRecordWeek.delete()
+                    # 統計是否連續四周
+                    if (achievementRecord.continuous_sport_seventyfive_week == 4):
+                        seventyfive_achievement = True
+
+                        achievedAchievement.append(6)
+                        updateUserAchievement(userId, 6, True)
+                        achievementRecord.sport_time_seventyfive_state = False                        
+
+                    if (achievementRecord.continuous_sport_hundredeighty_week == 4):
+                        hundredeighty_achievement = True
+
+                        achievedAchievement.append(7)
+                        updateUserAchievement(userId, 7, True)
+                        achievementRecord.sport_time_hundredeighty_state = False
+                    
+                    if (seventyfive_achievement and hundredeighty_achievement):
+                        break
+
+                    newSportRecordWeek = addSportRecordWeek(userId, startDate)
+                    achievementRecord.sport_record_week_id = newSportRecordWeek['id']
+                elif (completeDate.date() >= endDate):
+                    sportRecordWeek.delete()
+                    achievementRecord.continuous_sport_seventyfive_week = 0
+                    achievementRecord.continuous_sport_hundredeighty_week = 0
+
+                    while(completeDate.date() >= endDate):
+                        startDate = endDate
+                        endDate = startDate + timeDelta
+
+                    newSportRecordWeek = addSportRecordWeek(userId, startDate)
+                    achievementRecord.sport_record_week_id = newSportRecordWeek['id']
+
+    achievementRecord.save()
+
+    checkBodyBooster = addAndcheckBodyBooster(userId, len(achievedAchievement))
+    if (checkBodyBooster['isBodyBooster'] == "yes"):
+        achievedAchievement.append(1)
+
+    result = {
+        "achieved_achievement": achievedAchievement,
+        "count_achieve": checkBodyBooster['count_achieve']
+    }
+
+    return Response(result, status=200)
+
+def checkDiet(dietRecordList, userId):
+    profile = Profile.objects.get(user=userId)
+
+    date = dietRecordList[0].date.date()
+    countCalorie = 0
+    countProtein = 0
+    countFat = 0
+    countCarb = 0
+    countSodium = 0
+    continuousDays = 0
+
+    for dietRecord in dietRecordList:
+        # 調整數值
+        if (dietRecord.modify):
+            calorie = (dietRecord.calorie / 100 * dietRecord.serving_amount) if dietRecord.calorie is not None else None
+            sodium = (dietRecord.sodium / 100 * dietRecord.serving_amount) if dietRecord.sodium is not None else None
+            protein = (dietRecord.protein / 100 * dietRecord.serving_amount) if dietRecord.protein is not None else None
+            fat = (dietRecord.fat / 100 * dietRecord.serving_amount) if dietRecord.fat is not None else None
+            carb = (dietRecord.carb / 100 * dietRecord.serving_amount) if dietRecord.carb is not None else None
+        else:
+            calorie = (dietRecord.calorie * dietRecord.serving_amount) if dietRecord.calorie is not None else None
+            sodium = (dietRecord.sodium * dietRecord.serving_amount) if dietRecord.sodium is not None else None
+            protein = (dietRecord.protein * dietRecord.serving_amount) if dietRecord.protein is not None else None
+            fat = (dietRecord.fat * dietRecord.serving_amount) if dietRecord.fat is not None else None
+            carb = (dietRecord.carb * dietRecord.serving_amount) if dietRecord.carb is not None else None
+        
+        if (date == dietRecord.date.date()):
+            # count data
+            countSodium += sodium if sodium is not None else 0
+            countCalorie += calorie if calorie is not None else 0
+            countProtein += protein if protein is not None else 0
+            countFat += fat if fat is not None else 0
+            countCarb += carb if carb is not None else 0
+
+        else:
+            if (countSodium >= 186 and countSodium <= 2400 and countCalorie != 0):
+                proteinPercent = (countProtein*4)/countCalorie
+                if (proteinPercent >= 0.1 and proteinPercent <= 0.35):
+                    fatPercent = (countFat*9)/countCalorie
+                    if (fatPercent >= 0.2 and fatPercent <= 0.3):
+                        carbPercent = (countCarb*4)/countCalorie
+                        if (carbPercent >= 0.5 and carbPercent <= 0.6):
+                            if (profile.gender == 1):
+                                if (countCalorie >= 1500 and countCalorie <= 1800):
+                                    continuousDays += 1
+                            else:
+                                if (countCalorie >= 1200 and countCalorie <= 1500):
+                                     continuousDays += 1
+            
+            countCalorie = 0
+            countProtein = 0
+            countFat = 0
+            countCarb = 0
+            countSodium = 0
+
+            if ((dietRecord.date.date() - date) == timedelta(days=1)):
+                date = dietRecord.date.date()
+                # count data
+                countSodium += sodium if sodium is not None else 0
+                countCalorie += calorie if calorie is not None else 0
+                countProtein += protein if protein is not None else 0
+                countFat += fat if fat is not None else 0
+                countCarb += carb if carb is not None else 0
+            else:
+                break
+    
+    if (continuousDays == 7):
+        return True               
 
 
 @swagger_auto_schema(

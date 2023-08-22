@@ -10,8 +10,8 @@ from ..models import AchievementRecord, UserAchievement, UserAchievedSport, Spor
 from ..serializers import AchievementRecordSerializer, UserAchievedSportSerializer
 from ..utils.response import *
 
-def addAchievementRecord(user_id):
-    newAchievementRecord = { "user_id": user_id, }
+def addAchievementRecord(user_id, sport_record_week_id):
+    newAchievementRecord = { "user_id": user_id, "sport_record_week_id": sport_record_week_id }
     serializer = AchievementRecordSerializer(data=newAchievementRecord)
     if (serializer.is_valid()):
         serializer.save()

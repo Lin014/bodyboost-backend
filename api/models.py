@@ -206,6 +206,7 @@ class SportRecordItem(models.Model):
         ('none', '無限制')
     )
 
+    completed_time = models.DateTimeField(blank=True, null=True)
     # copy sport field
     sport_id = models.ForeignKey(Sport, on_delete=models.DO_NOTHING)
     custom_time = models.FloatField(blank=True, null=True)
@@ -315,6 +316,12 @@ class GoalHistory(models.Model):
     start_date = models.DateTimeField(auto_now_add=True)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 
+class SportRecordWeek(models.Model):
+    start_date = models.DateField()
+    end_date = models.DateField()
+    seconds = models.FloatField(default=0)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+
 class AchievementRecord(models.Model):
     
     # 計算是否達到 bodybooster
@@ -334,17 +341,23 @@ class AchievementRecord(models.Model):
     sport_ten_state = models.BooleanField(default=True)
     sport_twenty_state = models.BooleanField(default=True)
     sport_all_state = models.BooleanField(default=True)
+
+    sport_time_seventyfive_state = models.BooleanField(default=True)
+    sport_time_hundredeighty_state = models.BooleanField(default=True)
+    continuous_sport_seventyfive_week = models.IntegerField(default=0)
+    continuous_sport_hundredeighty_week = models.IntegerField(default=0)
+    sport_record_week_id = models.ForeignKey(SportRecordWeek, on_delete=models.DO_NOTHING)
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 
-class DietDayRecord(models.Model):
+# class DietDayRecord(models.Model):
 
-    date = models.DateField(default=timezone.now)
-    calorie = models.FloatField(default=0)
-    protein = models.FloatField(default=0)
-    fat = models.FloatField(default=0)
-    carb = models.FloatField(default=0)
-    sodium = models.FloatField(default=0)
-    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+#     date = models.DateField(default=timezone.now)
+#     calorie = models.FloatField(default=0)
+#     protein = models.FloatField(default=0)
+#     fat = models.FloatField(default=0)
+#     carb = models.FloatField(default=0)
+#     sodium = models.FloatField(default=0)
+#     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 
 class UserAchievedSport(models.Model):
     date = models.DateField(auto_now_add=True)

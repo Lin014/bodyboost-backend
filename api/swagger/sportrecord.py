@@ -58,6 +58,10 @@ addSportRecordResponses = {
 updateSportRecordItemRequestBody = openapi.Schema(
     type=openapi.TYPE_OBJECT,
     properties={
+        'completed_time': openapi.Schema(
+            type=openapi.TYPE_STRING,
+            description='完成時間，格式： "yyyy-mm-dd hh:mm:ss'
+        ),
         'time': openapi.Schema(
             type=openapi.TYPE_NUMBER,
             description='運動做了多久'
@@ -77,6 +81,47 @@ updateSportRecordItemResponses = {
     200: SportRecordItemSerializer,
     404: str(NotFoundResponse('SportRecordItem'))
 }
+
+# request_body: updateSportRecordItem
+checkSportRequestBody = openapi.Schema(
+    type=openapi.TYPE_ARRAY,
+    required=["completed_time", "time", "sport_record_id"],
+    items=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'id': openapi.Schema(
+                type=openapi.TYPE_INTEGER,
+            ),
+            'completed_time': openapi.Schema(
+                type=openapi.TYPE_STRING,
+            ),
+            'sport_id': openapi.Schema(
+                type=openapi.TYPE_INTEGER,
+            ),
+            'custom_time': openapi.Schema(
+                type=openapi.TYPE_NUMBER,
+            ),
+            'no': openapi.Schema(
+                type=openapi.TYPE_INTEGER,
+            ),
+            'mode': openapi.Schema(
+                type=openapi.TYPE_STRING,
+            ),
+            'time': openapi.Schema(
+                type=openapi.TYPE_NUMBER,
+            ),
+            'counts': openapi.Schema(
+                type=openapi.TYPE_INTEGER,
+            ),
+            'consumed_kcal': openapi.Schema(
+                type=openapi.TYPE_NUMBER,
+            ),
+            'sport_record_id': openapi.Schema(
+                type=openapi.TYPE_INTEGER,
+            )
+        }
+    )
+)
 
 # responses: deleteSportRecord
 deleteSportRecordResponses = {
