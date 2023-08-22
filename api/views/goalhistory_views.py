@@ -40,6 +40,6 @@ def addGoalHistory(userId, goal):
     serializer = GoalHistorySerializer(data=newGoalHistory)
     if (serializer.is_valid()):
         serializer.save()
-        return "Successfully"
+        return serializer.data
     else:
         return "Failed"

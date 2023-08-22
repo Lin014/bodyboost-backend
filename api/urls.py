@@ -48,6 +48,7 @@ urlpatterns = [
     path('profile/update/goal/<int:id>/', profile_views.updateGoalByUserId),
     path('profile/delete/<int:id>/', profile_views.deleteProfile),
     path('profile/uploadProfileImage/<int:id>', profile_views.uploadProfileImage),
+    path('profile/weightachievement/check/<int:id>', profile_views.checkWeight),
     # dailybonus
     path('dailybonus/<int:id>/', dailybonus_views.getDailyBonusByUserId),
     path('dailybonus/add/<int:id>/', dailybonus_views.addDailyBonusByUserId),

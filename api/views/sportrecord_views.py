@@ -296,14 +296,20 @@ def checkSport(request):
 
     achievementRecord.save()
 
-    checkBodyBooster = addAndcheckBodyBooster(userId, len(achievedAchievement))
-    if (checkBodyBooster['isBodyBooster'] == "yes"):
-        achievedAchievement.append(1)
+    if achievementRecord.count_achieve_state:
+        checkBodyBooster = addAndcheckBodyBooster(userId, len(achievedAchievement))
+        if (checkBodyBooster['isBodyBooster'] == "yes"):
+            achievedAchievement.append(1)
 
-    result = {
-        "achieved_achievement": achievedAchievement,
-        "count_achieve": checkBodyBooster['count_achieve']
-    }
+        result = {
+            "achieved_achievement": achievedAchievement,
+            "count_achieve": checkBodyBooster['count_achieve']
+        }
+    else:
+        result = {
+            "achieved_achievement": [],
+            "count_achieve": 14
+        }
 
     return Response(result, status=200)
 

@@ -104,7 +104,7 @@ updateGoalByUserIdRequestBody = openapi.Schema(
     properties={
         'goal': openapi.Schema(
             type=openapi.TYPE_STRING,
-            description='使用目標，health(維持身體健康), weight(減肥), muscle&fat(增肌減脂)'
+            description="使用目標，health: 維持身體健康, weight: 減重, fat: 減脂, muscle: 增肌"
         ),
     }
 )

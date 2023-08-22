@@ -37,6 +37,20 @@ class Member(models.Model):
     payment_type = models.CharField(max_length=15, blank=True, null=True)
     user_id = models.OneToOneField(Users, on_delete=models.CASCADE)
 
+
+#done
+class GoalHistory(models.Model):
+    goal_choices = [
+        ('health', '維持身體健康'),
+        ('weight', '減重'),
+        ('fat', '減脂'),
+        ('muscle', '增肌'),
+    ]
+
+    goal = models.CharField(default='health', max_length=30, choices=goal_choices)
+    start_date = models.DateTimeField(auto_now_add=True)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+
 # done
 class Profile(models.Model):
     gender_choices = [(1, 1), (2, 2)]
@@ -56,7 +70,7 @@ class Profile(models.Model):
     weight_goal = models.FloatField(blank=True, null=True)
     image = models.ImageField(upload_to='profile_img', default='')
     # 目標
-    goal = models.CharField(default='health', max_length=30, choices=goal_choices)
+    goal_id = models.ForeignKey(GoalHistory, on_delete=models.DO_NOTHING)
     # 體脂率
     body_fat = models.FloatField(blank=True, null=True)
     user = models.OneToOneField(Users, on_delete=models.CASCADE)
@@ -303,19 +317,6 @@ class UserAchievement(models.Model):
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
     achievement_id = models.ForeignKey(Achievement, on_delete=models.CASCADE)
 
-#done
-class GoalHistory(models.Model):
-    goal_choices = [
-        ('health', '維持身體健康'),
-        ('weight', '減重'),
-        ('fat', '減脂'),
-        ('muscle', '增肌'),
-    ]
-
-    goal = models.CharField(default='health', max_length=30, choices=goal_choices)
-    start_date = models.DateTimeField(auto_now_add=True)
-    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
-
 class SportRecordWeek(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
@@ -347,6 +348,10 @@ class AchievementRecord(models.Model):
     continuous_sport_seventyfive_week = models.IntegerField(default=0)
     continuous_sport_hundredeighty_week = models.IntegerField(default=0)
     sport_record_week_id = models.ForeignKey(SportRecordWeek, on_delete=models.DO_NOTHING)
+    # 減重
+    lose_two_weight_state = models.BooleanField(default=True)
+    lose_ten_weight_state = models.BooleanField(default=True)
+    
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
 
 # class DietDayRecord(models.Model):
