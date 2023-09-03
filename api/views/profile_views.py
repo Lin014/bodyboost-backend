@@ -35,12 +35,19 @@ from ..views.achievementrecord_veiws import updateUserAchievement, addAndcheckBo
 @permission_classes([IsAuthenticated])
 def getAllProfile(request):
     all_profile = Profile.objects.all()
+
     serializer = ProfileSerializer(all_profile, many=True)
 
     if (serializer.data == []):
         return Response(NotFoundResponse('Profile'), status=404)
     else:
-        return Response(serializer.data)
+        result = serializer.data
+        for profile in result:
+            goalHistory = GoalHistory.objects.get(id=profile['goal_id'])
+            del profile['goal_id']
+            profile['goal'] = goalHistory.goal
+            
+        return Response(result)
         
 
 @swagger_auto_schema(
@@ -57,7 +64,13 @@ def getProfileById(request, id):
     try:
         p = Profile.objects.get(user=id)
         serializer = ProfileSerializer(p)
-        return Response(serializer.data, status=200)
+
+        result = serializer.data
+        goalHistory = GoalHistory.objects.get(id=result['goal_id'])
+        del result['goal_id']
+        result['goal'] = goalHistory.goal
+ 
+        return Response(result, status=200)
     except Profile.DoesNotExist:
         return Response(NotFoundResponse('Profile'), status=404)
     
@@ -102,7 +115,11 @@ def addProfile(request):
         newSportRecordWeek = addSportRecordWeek(rUser.id, timezone.now())
         addAchievementRecord(request.data['userID'], newSportRecordWeek['id'])
 
-        return Response(serializer.data)
+        result = serializer.data
+        del result['goal_id']
+        result['goal'] = newGoalHistory['goal']
+
+        return Response(result)
     else:
         return Response(FormatErrorResponse('Profile'), status=400)
     
@@ -132,7 +149,12 @@ def updateProfileByUserId(request, id):
     if (serializer.is_valid):
         updateProfile.save()
 
-        return Response(serializer.data, status=200)
+        result = serializer.data
+        goalHistory = GoalHistory.objects.get(id=result['goal_id'])
+        del result['goal_id']
+        result['goal'] = goalHistory.goal
+
+        return Response(result, status=200)
     else:
         return Response(FormatErrorResponse('Profile'), status=400)
 
@@ -163,7 +185,12 @@ def updateWeightByUserId(request, id):
         # add weight history
         addWeightHistory(serializer.data['user'], request.data['weight'])
 
-        return Response(serializer.data, status=200)
+        result = serializer.data
+        goalHistory = GoalHistory.objects.get(id=result['goal_id'])
+        del result['goal_id']
+        result['goal'] = goalHistory.goal
+
+        return Response(result, status=200)
     else:
         return Response(FormatErrorResponse('Profile'), status=400)
 
@@ -255,7 +282,12 @@ def updateBodyFatByUserId(request, id):
         # add body fat history
         addBodyFatHistory(serializer.data['user'], request.data['body_fat'])
 
-        return Response(serializer.data, status=200)
+        result = serializer.data
+        goalHistory = GoalHistory.objects.get(id=result['goal_id'])
+        del result['goal_id']
+        result['goal'] = goalHistory.goal
+
+        return Response(result, status=200)
     else:
         return Response(FormatErrorResponse('Profile'), status=400)
     
@@ -286,7 +318,11 @@ def updateGoalByUserId(request, id):
     if (serializer.is_valid):
         updateProfile.save()
 
-        return Response(serializer.data, status=200)
+        result = serializer.data
+        del result['goal_id']
+        result['goal'] = newGoalHistory['goal']
+
+        return Response(result, status=200)
     else:
         return Response(FormatErrorResponse('Profile'), status=400)
 
@@ -337,6 +373,12 @@ def uploadProfileImage(request, id):
         profile.save()
         # convert profile object to json format
         serializer = ProfileSerializer(profile)
-        return Response(serializer.data)
+
+        result = serializer.data
+        goalHistory = GoalHistory.objects.get(id=result['goal_id'])
+        del result['goal_id']
+        result['goal'] = goalHistory.goal
+
+        return Response(result)
     else:
         return Response(FormatErrorResponse('Image'))
