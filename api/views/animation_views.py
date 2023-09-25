@@ -41,7 +41,7 @@ def getAnimation(request):
 @api_view(['POST'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
-def addAnimation(request, id):
+def addAnimation(request):
     try:
         sport = Sport.objects.get(id=request.data['sport_id'])
     except Sport.DoesNotExist:
@@ -54,19 +54,26 @@ def addAnimation(request, id):
 
     if (validateVideo(animation)):
         if (validateImage(image)):
-            newAnimation = {
-                'name': name,
-                'animation': animation,
-                'image': image,
-                'sport_id': sport_id
-            }
 
-            serializer = AnimationSerializer(data=newAnimation)
-            if (serializer.is_valid()):
-                serializer.save()
-                return Response(serializer.data, status=200)
-            else:
-                return Response(FormatErrorResponse('Animation'), status=400)
+            newAnimation = Animation.objects.create(name=name, sport_id=sport, animation=animation, image=image)
+            serializer = AnimationSerializer(newAnimation)
+            return Response(serializer.data, status=200)
+
+            # newAnimation = {
+            #     'name': name,
+            #     'animation': animation,
+            #     'image': image,
+            #     'sport_id': sport_id
+            # }
+
+            # serializer = AnimationSerializer(data=newAnimation)
+
+            # if (serializer.is_valid()):
+            #     serializer.save()
+            #     return Response(serializer.data, status=200)
+            # else:
+            #     print(serializer.errors)
+            #     return Response(FormatErrorResponse('Animation'), status=400)
         else:
             return Response(FormatErrorResponse("Animation's image"), status=400)
     else:

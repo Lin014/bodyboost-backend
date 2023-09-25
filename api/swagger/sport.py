@@ -58,7 +58,7 @@ addSportRequestBody = openapi.Schema(
             description='MET'
         ),
         'type': openapi.Schema(
-            type=openapi.TYPE_NUMBER,
+            type=openapi.TYPE_STRING,
             description='有氧(aerobics)、無氧(anaerobic)運動'
         ),
     }
