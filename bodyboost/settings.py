@@ -75,7 +75,7 @@ WSGI_APPLICATION = 'bodyboost.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'bodyboost-data',
+        'NAME': 'bodyboost-data', #gcp: bodyboost-data
         'USER': os.getenv('DATABASE_USER'),
         'PASSWORD': os.getenv('DATABASE_PASSWORD'),
         'HOST': os.getenv('DATABASE_HOST'),
@@ -138,10 +138,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # MEDIA_URL = '/media/'
 # MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-from google.oauth2 import service_account
-GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    os.path.join(BASE_DIR, "bodyboost-credential.json")
-)
+# from google.oauth2 import service_account
+# GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+#     os.path.join(BASE_DIR, "bodyboost-credential.json")
+# )
 
 DEFAULT_FILE_STORAGE = 'bodyboost.gcloud.GoogleCloudMediaFileStorage'
 GS_PROJECT_ID = 'bodyboost-400103'

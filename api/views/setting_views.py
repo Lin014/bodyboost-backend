@@ -36,7 +36,7 @@ def getSettingByUserId(request, id):
 def addSetting(userId):
     newSetting = {
         'theme': 'light',
-        'anim_char_name': 'Bob',
+        'anim_char_name': 'Lisa',
         'is_alerted': False,
         'user_id': userId
     }

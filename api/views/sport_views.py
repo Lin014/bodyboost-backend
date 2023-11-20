@@ -37,6 +37,7 @@ def getAllSportByUserId(request, id):
             ainmationSerializer = AnimationSerializer(animation)
             sport['animation'] = ainmationSerializer.data
         except Animation.DoesNotExist:
+            print("Not found.")
             sport['animation'] = {}
 
     result_page = paginator.paginate_queryset(sportlist, request)
