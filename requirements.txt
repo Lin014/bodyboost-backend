@@ -1,0 +1,13 @@
+# pip install -r requirements.txt
+
+django
+djangorestframework
+psycopg2
+drf_yasg
+python-dotenv
+python-magic
+pillow
+django-storages
+google-cloud-storage
+
+# pip install python-magic-bin==0.4.14
