@@ -2,12 +2,31 @@ from drf_yasg import openapi
 
 from ..serializers import DietRecordSerializer
 from ..utils.response import *
+from .page import pageManualParameters
 
 # responses: getDietRecordById
 getDietRecordByIdResponses = {
     200: DietRecordSerializer,
     404: str(NotFoundResponse('DietRecord'))
 }
+
+dateManualParameters = [
+    openapi.Parameter(
+        name='date',
+        in_=openapi.IN_QUERY,
+        type=openapi.TYPE_STRING,
+        description='查詢關鍵字，格式: 2023-11-11',
+        required=False
+    ),
+    openapi.Parameter(
+        name='date_sort',
+        in_=openapi.IN_QUERY,
+        type=openapi.TYPE_STRING,
+        description='日期遞增(0)or遞減(1)排序，預設為遞增',
+        required=False
+    ),
+    *pageManualParameters,
+]
 
 # request_body: addDietRecord
 addDietRecordRequestBody = openapi.Schema(

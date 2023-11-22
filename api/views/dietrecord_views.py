@@ -12,6 +12,8 @@ from ..models import DietRecord, Users, FoodType, Store, Profile, AchievementRec
 from ..serializers import DietRecordSerializer, DietRecordDateSerializer
 from ..utils.response import *
 from ..swagger.dietrecord import *
+from .pagination_views import paginator
+from ..swagger.page import pageManualParameters
 from ..views.achievementrecord_veiws import updateUserAchievement, addAndcheckBodyBooster
 
 @swagger_auto_schema(
@@ -19,18 +21,39 @@ from ..views.achievementrecord_veiws import updateUserAchievement, addAndcheckBo
     tags=["DietRecord"],
     operation_summary='查詢指定使用者飲食紀錄',
     operation_description="輸入id，查詢使用者飲食紀錄",
+    manual_parameters=dateManualParameters,
     responses=getDietRecordByIdResponses
 )
 @api_view(['GET'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
 def getDietRecordById(request, id):
+    date = request.query_params.get('date', None)
+    dateSort = request.query_params.get('date_sort', None)
+
     try:
-        all_dietRecord = DietRecord.objects.filter(user_id=id)
+        if date is None:
+            if dateSort is not None:
+                if (dateSort == '1'):
+                    all_dietRecord = DietRecord.objects.filter(user_id=id).order_by('-date')
+                else:
+                    all_dietRecord = DietRecord.objects.filter(user_id=id).order_by('date')
+            else:
+                all_dietRecord = DietRecord.objects.filter(user_id=id).order_by('date')
+        else:
+            if dateSort is not None:
+                if (dateSort == '1'):
+                    all_dietRecord = DietRecord.objects.filter(user_id=id, date__date=date).order_by('-date')
+                else:
+                    all_dietRecord = DietRecord.objects.filter(user_id=id, date__date=date).order_by('date')
+            else:
+                all_dietRecord = DietRecord.objects.filter(user_id=id, date__date=date).order_by('date')
 
         if (len(all_dietRecord) == 0):
             return Response(NotFoundResponse('DietRecord'), status=404)
-        serializer = DietRecordSerializer(all_dietRecord, many=True)
+        
+        result_page = paginator.paginate_queryset(all_dietRecord, request)
+        serializer = DietRecordSerializer(result_page, many=True)
         return Response(serializer.data, status=200)
     except DietRecord.DoesNotExist:
         return Response(NotFoundResponse('DietRecord'), status=404)
